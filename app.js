@@ -3,9 +3,10 @@ const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const db = require("./config/database");
-const authRouter = require('./auth/api/authRoutes');
-const homeRouter = require('./Home/api/home');
-const profileRouter = require('./profile/api/profileRoutes');
+const authRouter = require('./Components/auth/api/authRoutes');
+const coursesRouter = require("./Components/course/api/course");
+const homeRouter = require('./Components/Home/api/home');
+const profileRouter = require('./Components/profile/api/profileRoutes');
 const hbs = require('hbs');
 
 
@@ -40,8 +41,14 @@ app.use(
   );
 app.use(flash());
 
+
+// Đăng ký helper 'eq'
+hbs.registerHelper('eq', function (a, b) {
+  return a === b;
+});
 // Routes
 app.use('/', authRouter);
 app.use('/home', homeRouter);
+app.use("/courses", coursesRouter);
 app.use('/profile',profileRouter),
 module.exports = app;
