@@ -119,3 +119,7 @@ function saveNewTopic() {
         alert("Please enter a topic name!");
     }
 }
+
+function cancelAdd() {
+    window.location.href = "/courses";
+}
