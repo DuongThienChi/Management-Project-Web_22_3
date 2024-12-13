@@ -25,14 +25,14 @@ function uncheckAllSkills() {
     });
 }
 
-function openAddSkillModal() {
-    const modal = document.getElementById("addSkillModal");
-    modal.classList.remove("hidden"); // Hiển thị modal
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove("hidden");
 }
 
-function closeAddSkillModal() {
-    const modal = document.getElementById("addSkillModal");
-    modal.classList.add("hidden"); // Ẩn modal
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.add("hidden");
 }
 
 function saveNewSkill() {
@@ -65,8 +65,51 @@ function saveNewSkill() {
         };
         xhr.send(JSON.stringify({ newSkill }));
 
-        closeAddSkillModal();
+        closeModal("addSkillModal");
     } else {
         alert("Please enter a skill name!");
+    }
+}
+
+function handleTopicChange() {
+    const topicSelect = document.getElementById("topic");
+    const selectedValue = topicSelect.value;
+
+    if (selectedValue === "Add Topic") {
+        topicSelect.selectedIndex = 0; // Reset the selected value
+        openModal("addTopicModal"); // Open the modal when "Add Topic" is selected
+    }
+}
+
+function saveNewTopic()
+{
+    const newTopic = document.getElementById("newTopic").value.trim();
+    if (newTopic) {
+        document.getElementById("newTopic").value = ""; // Xóa giá trị trong input
+
+        xhr = new XMLHttpRequest();
+        xhr.open("POST", "/courses/Add/newTopic", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    // Create the new topic option directly
+                    const newTopic = response.result;
+                    const newOption = `<option value="${newTopic._id}">${newTopic.Name}</option>`;
+
+                    // Append the new option to the topic select
+                    const topicSelect = document.getElementById("topic");
+                    topicSelect.insertAdjacentHTML("beforeend", newOption);
+                } else {
+                    alert("Failed to add new topic!");
+                }
+            }
+        };
+        xhr.send(JSON.stringify({ newTopic }));
+
+        closeModal("addTopicModal");
+    } else {
+        alert("Please enter a topic name!");
     }
 }

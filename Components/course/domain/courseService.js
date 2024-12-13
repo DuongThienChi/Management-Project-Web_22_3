@@ -115,6 +115,11 @@ const CourseService = {
         const newSkill = await SkillModel.create({ Name: skillName });
         return newSkill;
     },
+
+    addNewTopic: async (topicName) => {
+        const newTopic = await TopicModel.create({ Name: topicName });
+        return newTopic;
+    },
 };
 
 module.exports = CourseService;
