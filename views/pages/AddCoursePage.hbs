@@ -65,38 +65,6 @@
                 </div>
 			</div>
 
-			<dialog id="topicDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="topicDialog" 
-					role="dialog" aria-modal="true">
-				<div class="flex justify-center">
-					<h2 class="text-2xl font-semibold">Add Topic</h2>
-				</div>
-			</dialog>
-
-			<dialog id="skillGainDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="skillGainDialog" 
-					role="dialog" aria-modal="true">
-				<div class="flex justify-center">
-					<h2 class="text-2xl font-semibold">Add Skill Gain</h2>
-				</div>
-				<div class="grid grid-cols-2 flex justify-center "> 
-				{{#each skills}}
-					<div>
-						<div class="flex items-center">
-							<input type="checkbox" id="{{this._id}}" name="SkillGain" value="{{this._id}}" class="mr-2 w-6 h-6">
-							<label for="{{this._id}}">{{this.Name}}</label>
-						</div>
-					</div>
-				{{/each}}
-				</div>
-
-				<div class="flex justify-end mt-4">
-					<button onclick="closeSkillDialog()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg mr-2">
-						Cancel
-					</button>
-					<button onclick="applySkills()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
-						OK
-					</button>
-				</div>
-			</dialog>
             <!-- Description -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Description</label>
@@ -109,7 +77,74 @@
                 <button type="submit" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg">Save</button>
             </div>
         </form>
+
+        <!-- Dialogs -->
+        <dialog id="skillGainDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="skillGainDialog" 
+                    role="dialog" aria-modal="true">
+            <div class="flex items-center justify-between my-4">
+                <!-- Div chứa nút -->
+                <div class="flex">
+                    <button onclick="uncheckAllSkills()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">
+                        Uncheck All
+                    </button>
+                </div>
+                <!-- Div chứa tiêu đề -->
+                <div class="flex justify-center flex-1">
+                    <h2 class="text-2xl font-semibold">Add Skill Gain</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 flex justify-center" id="skillList"> 
+                {{#each skills}}
+                <div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="{{this._id}}" name="SkillGain" value="{{this.Name}}" class="mr-2 w-6 h-6">
+                        <label for="{{this._id}}">{{this.Name}}</label>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="flex justify-center mt-4">
+                <button onclick="applySkills()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+                    OK
+                </button>
+
+                <button onclick="openAddSkillModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg mx-4">
+                    Add New Skill
+                </button>
+
+                <button onclick="closeSkillDialog()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg">
+                    Cancel
+                </button>
+            </div>
+
+            <div id="addSkillModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white p-6 rounded-lg w-1/3">
+                    <h2 class="text-xl font-bold mb-4">Add New Skill</h2>
+                    <input type="text" id="newSkill" placeholder="Enter skill name"
+                        class="w-full p-2 border border-gray-300 rounded-lg mb-4">
+                    <div class="flex justify-end">
+                        <button onclick="closeAddSkillModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg mr-2">
+                            Cancel
+                        </button>
+                        <button onclick="saveNewSkill()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+
+        <dialog id="topicDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="topicDialog" 
+                role="dialog" aria-modal="true">
+            <div class="flex justify-center">
+                <h2 class="text-2xl font-semibold">Add Topic</h2>
+            </div>
+        </dialog>
+
+        <!-- Modal -->
     </div>
 </div>
 
-<script src="javascripts/AddCourseScript.js"></script>
+<script src="/javascripts/AddCourseScript.js"></script>

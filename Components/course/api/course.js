@@ -6,6 +6,7 @@ router
     .get("/", CourseController.getCourses) 
     .get("/Add", CourseController.ShowAddCoursePage)
     .get("/:id", CourseController.GetCourseDetail) 
+    .post("/Add/newSkill", CourseController.AddNewSkill)
     .post("/edit/update", CourseController.UpdateCourse); 
 
 module.exports = router;

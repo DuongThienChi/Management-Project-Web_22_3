@@ -109,7 +109,12 @@ const CourseService = {
         const topics = await TopicModel.GetAllTopics();
         const skills = await SkillModel.GetAllSkills();
         return { topics, skills };
-    }
+    },
+
+    addNewSkill: async (skillName) => {
+        const newSkill = await SkillModel.create({ Name: skillName });
+        return newSkill;
+    },
 };
 
 module.exports = CourseService;
