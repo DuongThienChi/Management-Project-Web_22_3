@@ -104,6 +104,12 @@ const CourseService = {
             relevantCourses,
         };
     },
+
+    getTopicAndSkill: async () => {
+        const topics = await TopicModel.GetAllTopics();
+        const skills = await SkillModel.GetAllSkills();
+        return { topics, skills };
+    }
 };
 
 module.exports = CourseService;

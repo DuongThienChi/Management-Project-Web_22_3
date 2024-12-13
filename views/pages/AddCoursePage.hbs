@@ -1,0 +1,115 @@
+<div class="flex items-center justify-center">
+    <div class="bg-white w-full max-w-full max-h-full">
+        <form id="courseForm">
+            <!-- Course Image -->
+            <div class="flex items-center justify-center mb-6">
+                <img id="courseImagePreview" src="https://via.placeholder.com/80" alt="Course Image" class="rounded-lg w-32 h-32 object-cover">
+                <input type="file" id="courseImage" name="Img" accept="image/*" class="hidden" onchange="previewImage(event)">        
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+                <!-- Title -->
+                <div class="mb-4 md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="title" name="Title" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+
+                <!-- Lecturer -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Lecturer</label>
+                    <input type="text" id="lecturer" name="Lecturer" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-4">
+                <!-- Level -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Level</label>
+                    <select id="level" name="Level" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                        <option value="Beginner" {{#if (eq Course.Level 'Beginner')}}selected{{/if}}>Beginner</option>
+                        <option value="Intermediate" {{#if (eq Course.Level 'Intermediate')}}selected{{/if}}>Intermediate</option>
+                        <option value="Advanced" {{#if (eq Course.Level 'Advanced')}}selected{{/if}}>Advanced</option>
+                    </select>
+                </div>
+                
+                <!-- Price -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Price ($)</label>
+                    <input type="number" id="price" name="Price" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+
+                <!-- Duration -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Duration (Weeks)</label>
+                    <input type="number" id="duration" name="Duration" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+            </div>
+
+			<div class="mb-4 grid grid-cols-1 md:grid-cols-3 md:gap-4">
+				<!-- topic -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Topic</label>
+                    <select id="topic" name="Topic" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+						{{#each topics}}
+						<option value="{{this._id}}">{{this.Name}}</option>
+						{{/each}}
+						<option value="Add Topic" onclick="document.getElementById('topicDialog').showModal()">Add Topic</option>
+                    </select>
+                </div>
+
+				<!-- Skill gain -->
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Skill Gain</label>
+					<input type="text" id="skillGain" name="SkillGain" value="Add Skill Gain" onclick="document.getElementById('skillGainDialog').showModal()"
+							class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" >
+                </div>
+			</div>
+
+			<dialog id="topicDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="topicDialog" 
+					role="dialog" aria-modal="true">
+				<div class="flex justify-center">
+					<h2 class="text-2xl font-semibold">Add Topic</h2>
+				</div>
+			</dialog>
+
+			<dialog id="skillGainDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="skillGainDialog" 
+					role="dialog" aria-modal="true">
+				<div class="flex justify-center">
+					<h2 class="text-2xl font-semibold">Add Skill Gain</h2>
+				</div>
+				<div class="grid grid-cols-2 flex justify-center "> 
+				{{#each skills}}
+					<div>
+						<div class="flex items-center">
+							<input type="checkbox" id="{{this._id}}" name="SkillGain" value="{{this._id}}" class="mr-2 w-6 h-6">
+							<label for="{{this._id}}">{{this.Name}}</label>
+						</div>
+					</div>
+				{{/each}}
+				</div>
+
+				<div class="flex justify-end mt-4">
+					<button onclick="closeSkillDialog()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg mr-2">
+						Cancel
+					</button>
+					<button onclick="applySkills()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+						OK
+					</button>
+				</div>
+			</dialog>
+            <!-- Description -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="description" name="Description" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]"></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-between">
+                <button type="button" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400" onclick="cancelEdit()">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/javascripts/AddCourseScript.js"></script>

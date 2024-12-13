@@ -86,6 +86,17 @@ const CourseController = {
             res.status(500).json({ success: false, message: 'An error occurred while updating the course' });
         }
     },
+
+    ShowAddCoursePage: async (req, res) => {
+        const { topics, skills } = await CourseService.getTopicAndSkill();
+        res.render("pages/AddCoursePage", {
+            title: "Add Course",
+            topics,
+            skills,
+            showSidebar: true,
+            showTopbar: true,
+        });
+    }
 };
     
 
