@@ -76,16 +76,15 @@ function handleTopicChange() {
     const selectedValue = topicSelect.value;
 
     if (selectedValue === "Add Topic") {
-        topicSelect.selectedIndex = 0; // Reset the selected value
-        openModal("addTopicModal"); // Open the modal when "Add Topic" is selected
+        topicSelect.selectedIndex = 0;
+        openModal("addTopicModal");
     }
 }
 
-function saveNewTopic()
-{
+function saveNewTopic() {
     const newTopic = document.getElementById("newTopic").value.trim();
     if (newTopic) {
-        document.getElementById("newTopic").value = ""; // Xóa giá trị trong input
+        document.getElementById("newTopic").value = "";
 
         xhr = new XMLHttpRequest();
         xhr.open("POST", "/courses/Add/newTopic", true);
@@ -94,13 +93,20 @@ function saveNewTopic()
             if (xhr.readyState === 4 && xhr.status === 200) {
                 const response = JSON.parse(xhr.responseText);
                 if (response.success) {
-                    // Create the new topic option directly
+                    // Create the new topic option as a DOM node
                     const newTopic = response.result;
-                    const newOption = `<option value="${newTopic._id}">${newTopic.Name}</option>`;
+                    const newOption = document.createElement("option");
+                    newOption.value = newTopic._id;
+                    newOption.textContent = newTopic.Name;
 
-                    // Append the new option to the topic select
+                    // Get the 'Add Topic' option element
                     const topicSelect = document.getElementById("topic");
-                    topicSelect.insertAdjacentHTML("beforeend", newOption);
+                    const addTopicOption = topicSelect.querySelector(
+                        'option[value="Add Topic"]'
+                    );
+
+                    // Insert the new option before 'Add Topic'
+                    topicSelect.insertBefore(newOption, addTopicOption);
                 } else {
                     alert("Failed to add new topic!");
                 }
