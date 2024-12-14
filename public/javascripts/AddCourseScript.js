@@ -39,7 +39,6 @@ function openModal(modalId) {
 
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
-    modal.classList.add("hidden");
 
     if (modalId === "ModuleModal") {
         // set module list like before
@@ -75,6 +74,8 @@ function closeModal(modalId) {
             )
             .join("");
     }
+    // remove the modal from the DOM
+    modal.remove();
 }
 
 function saveNewSkill() {
@@ -225,10 +226,9 @@ function saveModule() {
         document.getElementById("moduleName").value = "";
         document.getElementById("lessonList").innerHTML = "";
         const newModule = `
-                <div class="text-md mb-4 pr-6 py-2 border rounded-lg inline-block hover:cursor-pointer">
-                    <div class="inline-block"  onclick="SeeModuleInfo()">
-                        <input type="text" disabled id="${module.moduleName}" name="Modules" value="${module.moduleName}"
-                                size="${module.moduleName.length}" class="bg-white text-right">
+                <div class="text-md mb-4 px-4 py-2 border rounded-lg inline-block hover:cursor-pointer">
+                    <div class="inline-block"  onclick="SeeModuleInfo('${module.moduleName}')" id=${module.moduleName}>
+                        <span>${module.moduleName}: </span>
                         <span>has ${lessons.length} lesson(s)</span>
                     </div>
 
@@ -247,45 +247,45 @@ function saveModule() {
     }
 }
 
-function SeeModuleInfo() {
-    const module = event.target.closest("div");
-    const moduleName = module.querySelector("input").value;
+function SeeModuleInfo(name) {
+    const module = document.getElementById(name);
+    const moduleName = module.textContent.split(":")[0].trim();
     const lessons = modules.find((m) => m.moduleName === moduleName).lessons;
-    const ModuleInfo = `
-        <div id="ModuleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-            <div class="bg-white p-6 rounded-lg w-1/3">
-                <label class="block text-lg font-medium text-gray-700">Module Name</label>
-                <input type="text" value="${moduleName}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg 
-                            focus:ring-[#4f75ff] focus:border-[#4f75ff] text-md"
-                            id="editSectionModuleName">
-                <div class="text-lg font-medium text-gray-700 mt-4">Lessons:</div>
-                <div id="Module-lessonList" class="mb-4">
-                    ${lessons
-                        .map(
-                            (lesson, index) => `
-                        <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700">Name</label>
-                                <input type="text" id="LessonName" name="LessonName" value="${lesson.lessonName}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700">Duration(Minutes)</label>
-                                <input type="number" id="LessonDuration" name="LessonDuration" value="${lesson.lessonDuration}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
-                            </div>
-                        </div>`
-                        )
-                        .join("")}
+    // how to make modal can scroll
+    const ModuleInfo = `<div id="ModuleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white p-6 rounded-lg w-1/3 max-h-[80vh] overflow-y-auto">
+                    <label class="block text-lg font-medium text-gray-700">Module Name</label>
+                    <input type="text" value="${moduleName}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg 
+                                focus:ring-[#4f75ff] focus:border-[#4f75ff] text-md"
+                                id="editSectionModuleName">
+                    <div class="text-lg font-medium text-gray-700 mt-4">Lessons:</div>
+                    <div id="Module-lessonList" class="mb-4">
+                        ${lessons
+                            .map(
+                                (lesson, index) =>
+                                    `<div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-4">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700">Name</label>
+                                    <input type="text" id="LessonName" name="LessonName" value="${lesson.lessonName}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700">Duration(Minutes)</label>
+                                    <input type="number" id="LessonDuration" name="LessonDuration" value="${lesson.lessonDuration}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                                </div>
+                            </div>`
+                            )
+                            .join("")}
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="updateModule()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg mr-2">
+                            Save
+                        </button>
+                        <button onclick="closeModal('ModuleModal')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg ">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
-                <div class="flex justify-end">
-                    <button onclick="updateModule()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg mr-2">
-                        Save
-                    </button>
-                    <button onclick="closeModal('ModuleModal')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg ">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>`;
+            </div>`;
     document.body.insertAdjacentHTML("beforeend", ModuleInfo);
     openModal("ModuleModal");
 }
@@ -294,7 +294,9 @@ function removeModule() {
     const module = event.target.closest("div");
     module.remove();
     modules = modules.filter(
-        (m) => m.moduleName !== module.querySelector("input").value
+        (m) =>
+            m.moduleName !==
+            module.querySelector("div").textContent.split(":")[0].trim()
     );
 }
 
@@ -304,14 +306,14 @@ function updateModule() {
     const oldModuleName = moduleNameInput ? moduleNameInput.defaultValue : null; // Retrieve default value
     const newModuleName = moduleNameInput ? moduleNameInput.value : null; // Retrieve current value
 
-    if (oldModuleName && newModuleName) {
+    if (oldModuleName !== newModuleName) {
         const module = modules.find((m) => m.moduleName === oldModuleName);
         module.moduleName = newModuleName;
         moduleNameInput.defaultValue = newModuleName;
         const tag = document.getElementById(oldModuleName);
-        tag.value = newModuleName;
-        tag.size = newModuleName.length;
         tag.id = newModuleName;
+        tag.setAttribute("onclick", `SeeModuleInfo('${newModuleName}')`);
+        tag.textContent = `${newModuleName}: has ${module.lessons.length} lesson(s)`;
     }
 
     //update lessons
