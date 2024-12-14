@@ -73,11 +73,20 @@
                 <textarea id="description" name="Description" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]"></textarea>
             </div>
 
+            <div id="modules-container">
+
+            </div>
+
+            <!-- Modules -->
+            <button type="button" class="px-4 py-2 bg-gray-300 text-black rounded-lg mb-4 hover:bg-gray-400" onclick="document.getElementById('addModuleDialog').showModal()">Add Module</button>
+
+
             <!-- Buttons -->
             <div class="flex justify-between">
                 <button type="button" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400" onclick="cancelAdd()">Cancel</button>
-                <button type="button" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg">Save</button>
+                <button type="button" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg hover:bg-[#2a55f5]">Save</button>
             </div>
+
         </form>
 
         <!-- Dialogs -->
@@ -116,7 +125,7 @@
                     Add New Skill
                 </button>
 
-                <button onclick="closeSkillDialog()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg">
+                <button onclick="closeDialog('skillGainDialog')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg">
                     Cancel
                 </button>
             </div>
@@ -135,6 +144,39 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </dialog>
+
+        <dialog id="addModuleDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="addModuleModal" 
+                    role="dialog" aria-modal="true">
+            <!-- Div chứa tiêu đề -->
+            <div class="flex justify-center flex-1">
+                <h2 class="text-2xl font-semibold">Add Module</h2>
+            </div>
+            <div class="mx-16">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Module Name</label>
+                    <input type="text" id="moduleName" name="ModuleName" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+                <div>Lesson: </div>
+                <div id="lessonList">
+
+                </div>
+
+                <button type="button" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg hover:bg-[#2a55f5]"
+                        onclick="AddLesson()">
+                    Add Lesson
+                </button>
+            </div>
+
+            <div class="flex justify-center mt-4">
+                <button onclick="saveModule()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+                    Save
+                </button>
+
+                <button onclick="closeDialog('addModuleDialog')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg mx-4">
+                    Cancel
+                </button>
             </div>
         </dialog>
 

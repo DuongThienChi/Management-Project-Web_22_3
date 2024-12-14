@@ -1,5 +1,11 @@
-function closeSkillDialog() {
-    const dialog = document.getElementById("skillGainDialog");
+let modules = [];
+
+function closeDialog(id) {
+    const dialog = document.getElementById(id);
+    if (id === "addModuleDialog") {
+        document.getElementById("moduleName").value = "";
+        document.getElementById("lessonList").innerHTML = "";
+    }
     dialog.close();
 }
 
@@ -33,6 +39,41 @@ function openModal(modalId) {
 function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.classList.add("hidden");
+
+    if (modalId === "ModuleModal") {
+        // set module list like before
+        const moduleNameInput = document.getElementById(
+            "editSectionModuleName"
+        ); // Get the input element
+        const oldModuleName = moduleNameInput
+            ? moduleNameInput.defaultValue
+            : null; // Retrieve default value
+        moduleNameInput.value = oldModuleName;
+
+        const lessonList = document.getElementById("Module-lessonList");
+        // set lesson list like before
+        lessonList.innerHTML = modules
+            .find(
+                (m) =>
+                    m.moduleName ===
+                    document.getElementById("editSectionModuleName")
+                        .defaultValue
+            )
+            .lessons.map(
+                (lesson, index) => `
+                <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                        <input type="text" id="LessonName" name="LessonName" value="${lesson.lessonName}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Duration(Minutes)</label>
+                        <input type="number" id="LessonDuration" name="LessonDuration" value="${lesson.lessonDuration}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                    </div>
+                </div>`
+            )
+            .join("");
+    }
 }
 
 function saveNewSkill() {
@@ -120,6 +161,172 @@ function saveNewTopic() {
     }
 }
 
+function AddLesson() {
+    // Get the lessonList container
+    const lessonList = document.getElementById("lessonList");
+    // Create a new lesson div
+    const newLessonInput = `
+        <div class="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+            <!-- Title -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Name</label>
+                <input type="text" id="LessonName" name="LessonName" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+            </div>
+
+            <!-- Lecturer -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Duration(Minutes)</label>
+                <input type="number" id="LessonDuration" name="LessonDuration" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+            </div>
+
+            <div class="mb-4 flex items-end">
+                <button type="button" class="px-4 py-2 border hover:bg-red-500 rounded-md text-white bg-red-400"
+                        onclick="removeThisLesson()">                    
+                    <i class="fa-solid fa-x"></i>
+                </button>
+            </div>
+        </div>`;
+
+    // Append the new lesson div to the lesson list
+    lessonList.insertAdjacentHTML("beforeend", newLessonInput);
+}
+
 function cancelAdd() {
     window.location.href = "/courses";
 }
+
+function removeThisLesson() {
+    const lesson = event.target.closest(".grid");
+    lesson.remove();
+}
+
+function saveModule() {
+    const moduleName = document.getElementById("moduleName").value.trim();
+    const lessonInputs = document.querySelectorAll("#lessonList > div");
+
+    if (moduleName && lessonInputs.length > 0) {
+        const lessons = Array.from(lessonInputs).map((lesson) => {
+            const lessonName = lesson.querySelector("#LessonName").value.trim();
+            if (!lessonName) {
+                alert("Please enter a lesson name!");
+                return null;
+            }
+            const lessonDuration = lesson
+                .querySelector("#LessonDuration")
+                .value.trim();
+            return { lessonName, lessonDuration };
+        });
+
+        const module = { moduleName, lessons };
+        modules.push(module);
+
+        // Clear the input fields
+        document.getElementById("moduleName").value = "";
+        document.getElementById("lessonList").innerHTML = "";
+        const newModule = `
+                <div class="text-md mb-4 pr-6 py-2 border rounded-lg inline-block hover:cursor-pointer">
+                    <div class="inline-block"  onclick="SeeModuleInfo()">
+                        <input type="text" disabled id="${module.moduleName}" name="Modules" value="${module.moduleName}"
+                                size="${module.moduleName.length}" class="bg-white text-right">
+                        <span>has ${lessons.length} lesson(s)</span>
+                    </div>
+
+                    <button type="button" onclick="removeModule()"
+                            class="ml-2 px-2 py-1 border hover:bg-red-500 rounded text-white bg-red-400 text-xs text-center">
+                        <i class="fa-solid fa-x"></i>
+                    </button>
+                </div>`;
+        const moduleList = document.getElementById("modules-container");
+        moduleList.insertAdjacentHTML("beforeend", newModule);
+
+        // Close the dialog
+        closeDialog("addModuleDialog");
+    } else {
+        alert("Please enter a module name and at least one lesson!");
+    }
+}
+
+function SeeModuleInfo() {
+    const module = event.target.closest("div");
+    const moduleName = module.querySelector("input").value;
+    const lessons = modules.find((m) => m.moduleName === moduleName).lessons;
+    const ModuleInfo = `
+        <div id="ModuleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded-lg w-1/3">
+                <label class="block text-lg font-medium text-gray-700">Module Name</label>
+                <input type="text" value="${moduleName}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg 
+                            focus:ring-[#4f75ff] focus:border-[#4f75ff] text-md"
+                            id="editSectionModuleName">
+                <div class="text-lg font-medium text-gray-700 mt-4">Lessons:</div>
+                <div id="Module-lessonList" class="mb-4">
+                    ${lessons
+                        .map(
+                            (lesson, index) => `
+                        <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Name</label>
+                                <input type="text" id="LessonName" name="LessonName" value="${lesson.lessonName}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700">Duration(Minutes)</label>
+                                <input type="number" id="LessonDuration" name="LessonDuration" value="${lesson.lessonDuration}" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                            </div>
+                        </div>`
+                        )
+                        .join("")}
+                </div>
+                <div class="flex justify-end">
+                    <button onclick="updateModule()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg mr-2">
+                        Save
+                    </button>
+                    <button onclick="closeModal('ModuleModal')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg ">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    document.body.insertAdjacentHTML("beforeend", ModuleInfo);
+    openModal("ModuleModal");
+}
+
+function removeModule() {
+    const module = event.target.closest("div");
+    module.remove();
+}
+
+function updateModule() {
+    //update module name
+    const moduleNameInput = document.getElementById("editSectionModuleName"); // Get the input element
+    const oldModuleName = moduleNameInput ? moduleNameInput.defaultValue : null; // Retrieve default value
+    const newModuleName = moduleNameInput ? moduleNameInput.value : null; // Retrieve current value
+
+    if (oldModuleName && newModuleName) {
+        const module = modules.find((m) => m.moduleName === oldModuleName);
+        module.moduleName = newModuleName;
+        moduleNameInput.defaultValue = newModuleName;
+        const tag = document.getElementById(oldModuleName);
+        tag.value = newModuleName;
+        tag.size = newModuleName.length;
+        tag.id = newModuleName;
+    }
+
+    //update lessons
+    const lessonInputs = document.querySelectorAll("#Module-lessonList > div");
+    const lessons = Array.from(lessonInputs).map((lesson) => {
+        const lessonName = lesson.querySelector("#LessonName").value.trim();
+        if (!lessonName) {
+            alert("Please enter a lesson name!");
+            return null;
+        }
+        const lessonDuration = lesson
+            .querySelector("#LessonDuration")
+            .value.trim();
+        return { lessonName, lessonDuration };
+    });
+
+    const module = modules.find((m) => m.moduleName === newModuleName);
+    module.lessons = lessons;
+
+    closeModal("ModuleModal");
+}
+
