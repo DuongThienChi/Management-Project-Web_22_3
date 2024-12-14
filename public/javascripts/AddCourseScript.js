@@ -213,12 +213,19 @@ function saveModule() {
                 alert("Please enter a lesson name!");
                 return null;
             }
+            // if duration of one lesson is empty, alert
+            // just get lesson duration
             const lessonDuration = lesson
                 .querySelector("#LessonDuration")
                 .value.trim();
+            if (!lessonDuration) {
+                alert("Please enter a lesson duration!");
+                return null;
+            }
             return { lessonName, lessonDuration };
         });
 
+        if (lessons.includes(null)) return;
         const module = { moduleName, lessons };
         modules.push(module);
 
