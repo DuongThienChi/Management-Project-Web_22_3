@@ -14,10 +14,10 @@ const ModuleSchema = new mongoose.Schema({
     Lessons: {
         type: Array,
         required: true,
-    },
+},
     Duration: {
         type: Number,
-        required: true,
+        required: false,
     },
 });
 

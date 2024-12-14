@@ -1,4 +1,6 @@
 const CourseModel = require("../data-access/CourseModel");
+const LessonModel = require("../data-access/LessonModel");
+const ModuleModel = require("../data-access/ModuleModel");
 const SkillModel = require("../data-access/SkillModel");
 const TopicModel = require("../data-access/TopicModel");
 const mongoose = require("mongoose");
@@ -124,7 +126,23 @@ const CourseService = {
     addNewCourse: async (course) => {
         const newCourse = await CourseModel.create(course);
         return newCourse;
-    }
+    },
+
+    addNewModule: async (courseId, module) => {
+        const newModule = await ModuleModel.create({
+            CourseId: courseId,
+            ModuleName: module.moduleName,
+        });
+        for (const lesson of module.lessons) {
+            const duration = parseInt(lesson.lessonDuration);
+            await LessonModel.create({
+                ModuleId: newModule._id,
+                LessonName: lesson.lessonName,
+                Duration: duration,
+            });
+        }
+        return newModule;
+    },
 };
 
 module.exports = CourseService;

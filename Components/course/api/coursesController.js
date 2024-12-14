@@ -154,9 +154,6 @@ const CourseController = {
                 modules,
             } = req.body;
 
-            // skill gain: '[skill1], [skill2], ...' => ['skill1', 'skill2', ...]
-            // remove [] and split by ','
-
             const result = await CourseService.addNewCourse({
                 Title: title,
                 Duration: duration,
@@ -167,6 +164,12 @@ const CourseController = {
                 SkillGain: skillGain,
                 Lecturer: lecturer,
             });
+
+            if (modules && modules.length > 0) {
+                for (const module of modules) {
+                    await CourseService.addNewModule(result._id, module);
+                }
+            }
             res.status(StatusCodes.OK).json({ success: true, result });
         } catch (error) {
             console.error("Error adding new course:", error);
