@@ -134,7 +134,7 @@ const CourseService = {
             ModuleName: module.moduleName,
         });
         for (const lesson of module.lessons) {
-            const duration = parseInt(lesson.lessonDuration);
+            const duration = parseInt(lesson.lesson);
             await LessonModel.create({
                 ModuleId: newModule._id,
                 LessonName: lesson.lessonName,
