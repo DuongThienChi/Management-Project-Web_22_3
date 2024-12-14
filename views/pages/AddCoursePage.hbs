@@ -84,12 +84,12 @@
             <!-- Buttons -->
             <div class="flex justify-between">
                 <button type="button" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400" onclick="cancelAdd()">Cancel</button>
-                <button type="button" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg hover:bg-[#2a55f5]">Save</button>
+                <button type="button" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg hover:bg-[#2a55f5]" onclick="addCourse()">Save</button>
             </div>
 
         </form>
 
-        <!-- Dialogs -->
+        <!-- Select Skill dialog -->
         <dialog id="skillGainDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="skillGainDialog" 
                     role="dialog" aria-modal="true">
             <div class="flex items-center justify-between my-4">
@@ -147,6 +147,7 @@
             </div>
         </dialog>
 
+        <!-- Add Module dialog -->
         <dialog id="addModuleDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="addModuleModal" 
                     role="dialog" aria-modal="true">
             <!-- Div chứa tiêu đề -->

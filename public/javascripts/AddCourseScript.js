@@ -19,7 +19,8 @@ function applySkills() {
 
     document.getElementById("skillGain").value =
         selectedSkills || "Add Skill Gain";
-    closeSkillDialog();
+
+    closeDialog("skillGainDialog");
 }
 
 function uncheckAllSkills() {
@@ -292,6 +293,9 @@ function SeeModuleInfo() {
 function removeModule() {
     const module = event.target.closest("div");
     module.remove();
+    modules = modules.filter(
+        (m) => m.moduleName !== module.querySelector("input").value
+    );
 }
 
 function updateModule() {
@@ -330,3 +334,63 @@ function updateModule() {
     closeModal("ModuleModal");
 }
 
+function addCourse() {
+    const title = document.getElementById("title").value.trim();
+    const duration = document.getElementById("duration").value.trim();
+    const level = document.getElementById("level").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const price = document.getElementById("price").value.trim();
+    const topic = document.getElementById("topic").value.trim();
+    const skillGainDialog = document.getElementById("skillGainDialog");
+    // get id of the selected skills
+    const skillGain = Array.from(
+        skillGainDialog.querySelectorAll('input[name="SkillGain"]:checked')
+    ).map((cb) => cb.id);
+    const lecturer = document.getElementById("lecturer").value.trim();
+    const missingFields = [];
+
+    if (!title) missingFields.push("Title");
+    if (!duration) missingFields.push("Duration");
+    if (!level) missingFields.push("Level");
+    if (!description) missingFields.push("Description");
+    if (!price) missingFields.push("Price");
+    if (!topic) missingFields.push("Topic");
+    if (!skillGain) missingFields.push("Skill Gain");
+    if (!lecturer) missingFields.push("Lecturer");
+    if (modules.length === 0) missingFields.push("Modules");
+
+    if (missingFields.length > 0) {
+        alert(
+            `Please fill in the following fields: ${missingFields.join(", ")}`
+        );
+        return;
+    }
+
+    const course = {
+        title,
+        duration,
+        level,
+        description,
+        price,
+        topic,
+        skillGain,
+        lecturer,
+        modules,
+    };
+
+    xhr = new XMLHttpRequest();
+    xhr.open("POST", "/courses/Add/newCourse", true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success) {
+                alert("Course added successfully!");
+                window.location.href = "/courses";
+            } else {
+                alert("Failed to add course!");
+            }
+        }
+    };
+    xhr.send(JSON.stringify(course));
+}

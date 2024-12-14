@@ -120,6 +120,11 @@ const CourseService = {
         const newTopic = await TopicModel.create({ Name: topicName });
         return newTopic;
     },
+
+    addNewCourse: async (course) => {
+        const newCourse = await CourseModel.create(course);
+        return newCourse;
+    }
 };
 
 module.exports = CourseService;

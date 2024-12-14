@@ -8,6 +8,7 @@ router
     .get("/:id", CourseController.GetCourseDetail) 
     .post("/Add/newSkill", CourseController.AddNewSkill)
     .post("/Add/newTopic", CourseController.AddNewTopic)
+    .post("/Add/newCourse", CourseController.AddCourse)
     .post("/edit/update", CourseController.UpdateCourse); 
 
 module.exports = router;
