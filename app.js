@@ -49,6 +49,6 @@ hbs.registerHelper('eq', function (a, b) {
 // Routes
 app.use('/', authRouter);
 app.use('/home', homeRouter);
-app.use("/courses", coursesRouter);
+app.use('/courses', coursesRouter);
 app.use('/profile',profileRouter),
 module.exports = app;

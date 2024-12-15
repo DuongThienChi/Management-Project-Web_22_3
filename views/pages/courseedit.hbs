@@ -69,17 +69,10 @@
   document.getElementById('courseForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
-    alert('Save button clicked! Form is being submitted.');
-
     const path = window.location.pathname;
     const pathSegments = path.split('/');
     const courseId = pathSegments.length > 2 ? pathSegments[2] : null;
 
-    if (!courseId) {
-      alert('Error: Course ID not found in URL!');
-      console.error('Course ID not found in URL:', path);
-      return;
-    }
 
     const formData = {
       CourseID: courseId,
@@ -102,14 +95,10 @@
       const result = await response.json();
 
       if (result.success) {
-        alert('Course updated successfully!');
         window.location.href = '/courses';
-      } else {
-        alert('Error updating course: ' + result.message);
-      }
+      } 
     } catch (error) {
       console.error('Error:', error);
-      alert('An unexpected error occurred.');
     }
   });
 });
