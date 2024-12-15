@@ -1,22 +1,20 @@
 let currentSort = {
     field: null,
-    direction: 'asc' // Mặc định sắp xếp tăng dần
+    direction: 1
 };
 
 function applySort(field) {
-    // Nếu nhấp lại vào cùng một cột, đổi hướng sắp xếp
     if (currentSort.field === field) {
-        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        currentSort.direction = currentSort.direction === 1 ? -1 : 1;
     } else {
         currentSort.field = field;
-        currentSort.direction = 'asc'; // Mặc định tăng dần khi chọn cột mới
+        currentSort.direction = 1;
     }
 
-    // Gửi yêu cầu tới server hoặc xử lý dữ liệu ở phía client
+    updateSortIcons();
+
     sortTableData(currentSort.field, currentSort.direction);
 
-    // Cập nhật biểu tượng sắp xếp
-    updateSortIcons();
 }
 
 function updateSortIcons() {
@@ -28,11 +26,46 @@ function updateSortIcons() {
     // Cập nhật biểu tượng cho cột hiện tại
     const icon = document.getElementById(`sort-icon-${currentSort.field}`);
     if (icon) {
-        icon.innerHTML = currentSort.direction === 'asc' ? '⬆️' : '⬇️';
+        icon.innerHTML = currentSort.direction === 1 ? '⬆️' : '⬇️';
     }
 }
 
 function sortTableData(field, direction) {
     xhr = new XMLHttpRequest();
-    
+    xhr.open('GET', `/orders/api/payments?sort=${field}&order=${direction}`);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const { payments } = JSON.parse(xhr.responseText);
+            const tbody = document.getElementById('tableBody');
+            let index = 0;
+            tbody.innerHTML = payments.map(payment => {
+                index++;
+                const date = new Date(payment.createdAt);
+                createdDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+                const textColor = payment.status === 'pending' ? 'text-red-500' : 'text-green-500';
+                const html = `
+                    <tr class="hover:bg-gray-100">
+                        <td class="border border-gray-300 px-4 py-2">${index}</td>
+                        <td class="border border-gray-300 px-4 py-2">${payment._id}</td>
+                        <td class="border border-gray-300 px-4 py-2">${createdDate}</td>
+                        <td class="border border-gray-300 px-4 py-2">$${payment.total}</td>
+                        <td class="border border-gray-300 px-4 py-2">${payment.items.length}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="${textColor}">
+                                ${payment.status}
+                            </span>
+                        </td>
+
+                        <td class="border border-gray-300 px-4 py-2">${payment.userId.username}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <a href="/order/details/${payment._id}" class="text-blue-500 hover:underline">Details</a>
+                        </td>
+                    </tr>
+                `;
+                return html;
+            }).join('');
+        }
+    };
+
+    xhr.send();
 }

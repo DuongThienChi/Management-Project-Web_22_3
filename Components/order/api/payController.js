@@ -3,8 +3,8 @@ const PaymentService = require("../domain/PaymentService");
 const paymentController = {
     getPayments: async (req, res) => {
         try {
-            const {page, sort, date} = req.query; 
-            const { payments, totalPages } = await PaymentService.getPayments(page, sort, date);
+            const {page, sort, order, date} = req.query; 
+            const { payments, totalPages } = await PaymentService.getPayments(page, sort, order, date);
             if (!payments) {
                 return res.status(404).json({ message: "No payments found" });
             }
@@ -19,7 +19,21 @@ const paymentController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
-    }
+    },
+
+    getListPayments: async (req, res) => {
+        try {
+            const {page, sort, order, date} = req.query;
+            const { payments, totalPages } = await PaymentService.getPayments(page, sort, order, date);
+            if (!payments) {
+                return res.status(404).json({ message: "No payments found" });
+            }
+            
+            res.json({payments, totalPages});
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
 };
 
 module.exports = paymentController;

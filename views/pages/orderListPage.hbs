@@ -11,9 +11,9 @@
                 <tr>
                     <th class="border border-gray-300 px-4 py-2">No.</th>
                     <th class="border border-gray-300 px-4 py-2">ID</th>
-                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('date')">
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('createdAt')">
                         Date
-                        <span id="sort-icon-date" class="inline-block ml-2"></span>
+                        <span id="sort-icon-createdAt" class="inline-block ml-2"></span>
                     </th>
                     <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('total')">
                         Total
@@ -31,7 +31,7 @@
                     <th class="border border-gray-300 px-4 py-2">Details</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
                 {{#each orders}}
                     <tr class="hover:bg-gray-100">
                         <td class="border border-gray-300 px-4 py-2">{{index @index}}</td>
