@@ -7,6 +7,7 @@ const authRouter = require('./Components/auth/api/authRoutes');
 const coursesRouter = require("./Components/course/api/course");
 const homeRouter = require('./Components/Home/api/home');
 const profileRouter = require('./Components/profile/api/profileRoutes');
+const orderRouter = require('./Components/order/api/pay');
 const hbs = require('hbs');
 
 
@@ -46,9 +47,13 @@ app.use(flash());
 hbs.registerHelper('eq', function (a, b) {
   return a === b;
 });
+require("./views/helpers/orderHelpers");
+
+
 // Routes
 app.use('/', authRouter);
 app.use('/home', homeRouter);
 app.use("/courses", coursesRouter);
 app.use('/profile',profileRouter),
+app.use('/orders', orderRouter);
 module.exports = app;

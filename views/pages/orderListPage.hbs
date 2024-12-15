@@ -1,0 +1,59 @@
+<div class="overflow-x-auto">
+    <h2 class="text-4xl lg:text-5xl font-bold text-left mb-4">Orders List</h2>
+
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mx-4 mb-8">
+            Filter
+    </button>
+
+    <div class="border border-gray-300 rounded-lg overflow-hidden">
+        <table class="w-full border-collapse">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border border-gray-300 px-4 py-2">No.</th>
+                    <th class="border border-gray-300 px-4 py-2">ID</th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('date')">
+                        Date
+                        <span id="sort-icon-date" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('total')">
+                        Total
+                        <span id="sort-icon-total" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('quantity')">
+                        Quantity
+                        <span id="sort-icon-quantity" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('status')">
+                        Status
+                        <span id="sort-icon-status" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2">User</th>
+                    <th class="border border-gray-300 px-4 py-2">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each orders}}
+                    <tr class="hover:bg-gray-100">
+                        <td class="border border-gray-300 px-4 py-2">{{index @index}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{this._id}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{createdDate this.createdAt}}</td>
+                        <td class="border border-gray-300 px-4 py-2">${{this.total}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{this.items.length}}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="{{statusClass this.status}}">
+                                {{this.status}}
+                            </span>
+                        </td>
+
+                        <td class="border border-gray-300 px-4 py-2">{{this.userId.username}}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <a href="/order/details/{{this._id}}" class="text-blue-500 hover:underline">Details</a>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="/javascripts/OrderListScript.js"></script>
