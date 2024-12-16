@@ -34,19 +34,19 @@ const paymentSchema = new mongoose.Schema({
     },
 });
 
-paymentSchema.statics.fetchPayments = async function (page, sort, order, date) {
+paymentSchema.statics.fetchPayments = async function (page, sort, order, startDate, endDate, status) {
     const limit = 10;
     const skip = (page - 1) * limit;
     let query = {};
 
-    if (date) {
-        query = {
-            createdAt: {
-                $gte: new Date(date),
-                $lt: new Date(date).setDate(new Date(date).getDate() + 1),
-            },
-        };
+    if (startDate && endDate) {
+        query.createdAt = { $gte: startDate, $lte: endDate };
     }
+
+    if (status) {
+        query.status = status;
+    }
+
     order = parseInt(order) || -1;
 
     if (!sort) {
