@@ -5,11 +5,6 @@ const router = express.Router();
 
 const { ensureAuthenticated } = require("../../../middlewares/authencation");
 // GET Route: Home page
-router.get("/", ensureAuthenticated, (req, res) => {
-    if (!req.session.isLoggedIn) {
-        return res.redirect("/"); // Nếu chưa đăng nhập, redirect về login page
-    }
-    HomeController.GetHomePage(req, res);
-});
+router.get("/", ensureAuthenticated, HomeController.GetHomePage);
 
 module.exports = router;

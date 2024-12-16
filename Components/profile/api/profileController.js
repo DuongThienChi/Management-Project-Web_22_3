@@ -1,11 +1,12 @@
 const Admin = require("../../auth/data-access/AdminModel");
+const profileService = require("../domain/profileService");
 const bcrypt = require("bcrypt");
 
 const ProfileController = {
     GetProfilePage: async (req, res) => {
         try {
-            const userId = req.session.userId;
-            const user = await Admin.findById(userId);
+            const userId = req.user.id;
+            const user = await profileService.findUserById(userId);
 
             if (!user) {
                 return res.status(404).send("User not found");
@@ -25,33 +26,7 @@ const ProfileController = {
 
     UpdateProfile: async (req, res) => {
         try {
-            const userId = req.session.userId;
-            console.log("Received data in backend:", req.body);
-
-            const { name, email, address, contact, password } = req.body;
-
-            const updatedData = {};
-
-            if (name) updatedData.name = name;
-            if (email) updatedData.email = email;
-            if (address) updatedData.address = address;
-            if (contact) updatedData.contact = contact;
-            const hashedPassword = await bcrypt.hash(password, 10);
-            if (password) updatedData.password = hashedPassword;
-
-            console.log("Updated Data:", updatedData);
-
-            const updatedUser = await Admin.findByIdAndUpdate(
-                userId,
-                updatedData,
-                { new: true }
-            );
-
-            if (!updatedUser) {
-                return res
-                    .status(404)
-                    .json({ success: false, message: "User not found" });
-            }
+            await profileService.updateUserProfile(req, res);
         } catch (error) {
             console.error(error);
         }

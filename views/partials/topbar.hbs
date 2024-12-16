@@ -29,10 +29,12 @@
           href="#"
           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
         >Settings</a>
-        <a
-          href="#"
-          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >Logout</a>
+        <form action="" method="POST" class="logout">
+          <button
+            type="submit"
+            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >Logout</button>
+        </form>
       </div>
     </div>
   </div>
@@ -40,7 +42,14 @@
 
 
 <script>
+   const logoutForm = document.querySelector(".logout");
+  const url = window.location.origin;
 
+      if (url.includes('localhost:4000')) {
+          logoutForm.action = 'http://localhost:4000/logout';
+        } else {
+          logoutForm.action = 'https://management-project-web-22-3.onrender.com/logout';
+        }
   function toggleDropdown() {
     const dropdown = document.getElementById("dropdown");
     dropdown.classList.toggle("hidden");  

@@ -7,7 +7,11 @@ const authRouter = require("./Components/auth/api/authRoutes");
 const coursesRouter = require("./Components/course/api/course");
 const homeRouter = require("./Components/Home/api/home");
 const profileRouter = require("./Components/profile/api/profileRoutes");
+const MongoStore = require("connect-mongo");
+const passport = require("passport");
 const hbs = require("hbs");
+const dotenv = require("dotenv");
+dotenv.config({ path: "config.env" });
 
 db.connect();
 
@@ -46,8 +50,16 @@ hbs.registerHelper("json", function (context) {
     return JSON.stringify(context);
 });
 
+// Cấu hình flash messages
 app.use(flash());
-
+app.use((req, res, next) => {
+    res.locals.successMessage = req.flash("successMessage");
+    res.locals.errorMessage = req.flash("errorMessage");
+    res.locals.warningMessage = req.flash("warningMessage");
+    res.locals.existUser = req.flash("existUser");
+    res.locals.existMail = req.flash("existMail");
+    next();
+});
 // Đăng ký helper 'eq'
 hbs.registerHelper("eq", function (a, b) {
     return a === b;
