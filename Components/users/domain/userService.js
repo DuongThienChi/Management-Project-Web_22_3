@@ -33,6 +33,31 @@ const UserService = {
             endItem: endIndex > users.length ? users.length : endIndex,
         };
     },
+    getUserDetailInfo: async (id) => {
+        try {
+            const user = await User.findById(id);
+            return user;
+        } catch (error) {
+            console.error(error);
+        }
+    },
+    banUser: async (id) => {
+        try {
+            const user = await User.findById(id);
+            if (!user) {
+                return null;
+            }
+            if (user.ban) {
+                user.ban = false;
+            } else {
+                user.ban = true;
+            }
+            await user.save();
+            return user;
+        } catch (error) {
+            console.error(error);
+        }
+    },
 };
 
 module.exports = UserService;

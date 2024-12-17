@@ -86,38 +86,62 @@ function searchUsers() {
     fetchUsersData(params);
 }
 function fetchUsersData(params) {
-    const xhr = new XMLHttpRequest();
     const endpoint = `/users/user-list-data?${params.toString()}`;
-    xhr.open("GET", endpoint, true);
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                if (response.users.length === 0) {
-                    const userContainer = document.querySelector(
-                        ".user-container tbody"
-                    );
-                    userContainer.innerHTML = `<tr><td colspan="8" class="text-center">No users found</td></tr>`;
-                    const prev = document.querySelector(".prev");
-                    const next = document.querySelector(".next");
-                    //prev.classList.add("hidden");
-                    next.classList.add("hidden");
-                    updatePaging(0, 0, 0);
-                    return;
-                }
-                updateUsersContainer(
-                    response.users,
-                    response.startItem,
-                    response.endItem,
-                    response.totalItem
+    fetch(endpoint, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.users.length === 0) {
+                const userContainer = document.querySelector(
+                    ".user-container tbody"
                 );
+                userContainer.innerHTML = `<tr><td colspan="8" class="text-center">No users found</td></tr>`;
+                const prev = document.querySelector(".prev");
+                const next = document.querySelector(".next");
+                next.classList.add("hidden");
+                updatePaging(0, 0, 0);
+                return;
+            }
+            updateUsersContainer(
+                data.users,
+                data.startItem,
+                data.endItem,
+                data.totalItem
+            );
+        })
+        .catch((error) => console.error("Fetch error:", error));
+}
+
+// Ban user
+// Ban user
+function banUser(userId) {
+    const banxhr = new XMLHttpRequest();
+    const endpoint = `${window.location.origin}/users/ban/${userId}`;
+    banxhr.open("POST", endpoint, true);
+    banxhr.onreadystatechange = function () {
+        if (banxhr.readyState === 4) {
+            if (banxhr.status === 200) {
+                const response = JSON.parse(banxhr.responseText);
+                if (response.success) {
+                    const url = new URL(window.location.href);
+                    const params = new URLSearchParams(url.search);
+                    fetchUsersData(params);
+                } else {
+                    console.error("Error banning user");
+                }
             } else {
-                console.error(`Error: ${xhr.status} - ${xhr.statusText}`);
+                console.error(`Error: ${banxhr.status} - ${banxhr.statusText}`);
             }
         }
     };
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send();
+    banxhr.send();
 }
 function updateUsersContainer(users, startItem, endItem, totalItem) {
     const userContainer = document.querySelector(".user-container tbody");
@@ -130,8 +154,8 @@ function updateUsersContainer(users, startItem, endItem, totalItem) {
         row.innerHTML = `
             <td class="py-3 px-4">${user.username}</td>
             <td class="py-3 px-4">${user.email}</td>
-            <td class="py-3 px-4">${user.contact}</td>
-            <td class="py-3 px-4">${user.address}</td>
+            <td class="py-3 px-4">${user.contact ? user.contact : ""}</td>
+            <td class="py-3 px-4">${user.address ? user.address : ""}</td>
             <td class="py-3 px-4">${user.verify ? "Yes" : "No"}</td>
             <td class="py-3 px-4">${user.ban ? "Yes" : "No"}</td>
             <td class="py-3 px-4">${formatDate(user.createdAt)}</td>
@@ -141,9 +165,9 @@ function updateUsersContainer(users, startItem, endItem, totalItem) {
                         user._id
                     }" class="text-blue-600 hover:text-blue-800">👁️</a>
                     <span class="text-gray-400 h-full">|</span>
-                    <a href="/users/ban/${
-                        user._id
-                    }" class="text-red-600 hover:text-red-800">🚫</a>
+                   <button onclick="banUser('${
+                       user._id
+                   }')" class="text-red-600 hover:text-red-800">🚫</button>
                 </div>
             </td>
         `;

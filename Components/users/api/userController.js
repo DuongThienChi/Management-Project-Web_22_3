@@ -40,6 +40,43 @@ const UserController = {
             res.status(500).send("An error occurred while fetching users.");
         }
     },
+    GetUserDetailPage: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = await userServices.getUserDetailInfo(id);
+
+            if (!user) {
+                return res.status(404).send("User not found");
+            }
+
+            res.render("pages/userDetail", {
+                userDetail: user,
+                title: "User Detail",
+                showSidebar: true,
+                showTopbar: true,
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Internal Server Error");
+        }
+    },
+    BanUser: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const user = await userServices.banUser(id);
+            if (!user) {
+                return res.status(404).send("User not found");
+            }
+            res.status(200).json({
+                success: true,
+                ban: user,
+            });
+            //res.redirect("/users");
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Internal Server Error");
+        }
+    },
     // UpdateUser: async (req, res) => {
     //     try {
     //         await userServices.updateUserProfile(req, res);
