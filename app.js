@@ -7,6 +7,7 @@ const authRouter = require("./Components/auth/api/authRoutes");
 const coursesRouter = require("./Components/course/api/course");
 const homeRouter = require("./Components/Home/api/home");
 const profileRouter = require("./Components/profile/api/profileRoutes");
+const userRouter = require("./Components/users/api/user");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const hbs = require("hbs");
@@ -22,6 +23,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 hbs.registerPartials(path.join(__dirname, "views/partials"));
+//helpers
+require("./views/helpers/format");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -73,6 +77,7 @@ app.use((req, res, next) => {
 app.use("/", authRouter);
 app.use("/home", homeRouter);
 app.use("/courses", coursesRouter);
+app.use("/users", userRouter);
 app.use("/profile", profileRouter), (module.exports = app);
 
 module.exports = app;
