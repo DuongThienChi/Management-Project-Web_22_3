@@ -1,5 +1,6 @@
 const CourseService = require("../domain/courseService");
 const { StatusCodes, getReasonPhrase } = require("http-status-codes");
+const Course = require("../data-access/CourseModel");
 
 // Function to fetch and display courses with pagination
 const CourseController = {
@@ -7,7 +8,6 @@ const CourseController = {
         try {
             const { search, topic, skill, level, price, sort, order, page } =
                 req.query;
-
             const CoursesData = await CourseService.getCourses(
                 search,
                 topic,
@@ -19,7 +19,6 @@ const CourseController = {
                 page
             );
 
-            // Render the Handlebars template with pagination and courses data
             res.render("pages/course", {
                 courses: CoursesData.courses,
                 currentPage: CoursesData.currentPage,
@@ -42,9 +41,11 @@ const CourseController = {
     GetCourseDetail: async (req, res) => {
         try {
             const CourseId = req.params.id;
-            const isLoggedIn = false;
+            req.session.courseId = CourseId; // Store the courseId in the session
+
             const { title, Course, relevantCourses } =
                 await CourseService.getCourseDetail(CourseId);
+
             return res.status(StatusCodes.OK).render("pages/courseedit", {
                 title: title,
                 Course: Course,
@@ -53,7 +54,7 @@ const CourseController = {
                 showTopbar: true,
             });
         } catch (error) {
-            console.error("Error fetching course detail:", error); // Log error
+            console.error("Error fetching course detail:", error);
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
             });
@@ -61,14 +62,15 @@ const CourseController = {
     },
 
     UpdateCourse: async (req, res) => {
-        const courseId = req.params.id; // Lấy ID từ URL ("/courses/:id/update")
-        const { Title, Duration, Level, Description, Price } = req.body;
+        const courseId = req.session.courseId;
 
         if (!courseId) {
             return res
                 .status(400)
                 .json({ success: false, message: "Course ID is required" });
         }
+
+        const { Title, Duration, Level, Description, Price } = req.body;
 
         try {
             const updatedCourse = await Course.updateOne(

@@ -81,5 +81,6 @@ app.use("/", authRouter);
 app.use("/home", homeRouter);
 app.use("/courses", coursesRouter);
 app.use("/users", userRouter);
-app.use("/profile", profileRouter), app.use("/orders", orderRouter);
+app.use("/profile", profileRouter);
+app.use("/orders", orderRouter);
 module.exports = app;
