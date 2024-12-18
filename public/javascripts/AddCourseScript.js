@@ -369,6 +369,7 @@ function addCourse() {
     if (!skillGain) missingFields.push("Skill Gain");
     if (!lecturer) missingFields.push("Lecturer");
     if (modules.length === 0) missingFields.push("Modules");
+    if (!file) missingFields.push("Image");
 
     if (missingFields.length > 0) {
         alert(
