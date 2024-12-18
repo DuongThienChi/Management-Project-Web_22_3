@@ -351,6 +351,8 @@ function addCourse() {
     const price = document.getElementById("price").value.trim();
     const topic = document.getElementById("topic").value.trim();
     const skillGainDialog = document.getElementById("skillGainDialog");
+    const img = document.getElementById("image");
+    const file = img.files[0];
     // get id of the selected skills
     const skillGain = Array.from(
         skillGainDialog.querySelectorAll('input[name="SkillGain"]:checked')
@@ -375,21 +377,21 @@ function addCourse() {
         return;
     }
 
-    const course = {
-        title,
-        duration,
-        level,
-        description,
-        price,
-        topic,
-        skillGain,
-        lecturer,
-        modules,
-    };
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("duration", duration);
+    formData.append("level", level);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("topic", topic);
+    formData.append("skillGain", skillGain);
+    formData.append("lecturer", lecturer);
+    formData.append("modules", JSON.stringify(modules));
+    formData.append("image", file);
+
 
     xhr = new XMLHttpRequest();
     xhr.open("POST", "/courses/Add/newCourse", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
             const response = JSON.parse(xhr.responseText);
@@ -401,5 +403,5 @@ function addCourse() {
             }
         }
     };
-    xhr.send(JSON.stringify(course));
+    xhr.send(formData);
 }

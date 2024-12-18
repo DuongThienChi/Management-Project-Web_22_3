@@ -142,6 +142,7 @@ const CourseController = {
 
     AddCourse: async (req, res) => {
         try {
+            // get data from form
             const {
                 title,
                 duration,
@@ -154,6 +155,10 @@ const CourseController = {
                 modules,
             } = req.body;
 
+            const Modules = JSON.parse(modules);
+            // Lấy file ảnh từ request
+            const file = req.file;
+
             const result = await CourseService.addNewCourse({
                 Title: title,
                 Duration: duration,
@@ -163,10 +168,11 @@ const CourseController = {
                 Topic: topic,
                 SkillGain: skillGain,
                 Lecturer: lecturer,
+                Img: file,
             });
 
-            if (modules && modules.length > 0) {
-                for (const module of modules) {
+            if (Modules && Modules.length > 0) {
+                for (const module of Modules) {
                     await CourseService.addNewModule(result._id, module);
                 }
             }

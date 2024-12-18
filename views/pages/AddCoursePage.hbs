@@ -1,12 +1,6 @@
 <div class="flex items-center justify-center">
     <div class="bg-white w-full max-w-full max-h-full">
         <form id="courseForm">
-            <!-- Course Image -->
-            <div class="flex items-center justify-center mb-6">
-                <img id="courseImagePreview" src="https://via.placeholder.com/80" alt="Course Image" class="rounded-lg w-32 h-32 object-cover">
-                <input type="file" id="courseImage" name="Img" accept="image/*" class="hidden" onchange="previewImage(event)">        
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 md:gap-4">
                 <!-- Title -->
                 <div class="mb-4 md:col-span-2">
@@ -80,6 +74,12 @@
             <!-- Modules -->
             <button type="button" class="px-4 py-2 bg-gray-300 text-black rounded-lg mb-4 hover:bg-gray-400" onclick="document.getElementById('addModuleDialog').showModal()">Add Module</button>
 
+            <br>
+            <!-- Image -->
+            <div class="mb-4 inline-block">
+                <label class="block text-sm font-medium text-gray-700">Course Image</label>
+                <input type="file" id="image" name="Image" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+            </div>
 
             <!-- Buttons -->
             <div class="flex justify-between">
