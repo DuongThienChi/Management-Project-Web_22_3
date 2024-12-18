@@ -1,5 +1,5 @@
 const PaymentModel = require("../data-access/PayModel");
-const UserModel = require("../data-access/userModel");
+const UserModel = require("../../users/data-access/UserModel");
 
 const PaymentService = {
     getPayments: async (page, sort, order, startDate, endDate, status) => {
@@ -7,11 +7,18 @@ const PaymentService = {
             page = 1;
         }
 
-        const payments = await PaymentModel.fetchPayments(page, sort, order, startDate, endDate, status);
+        const payments = await PaymentModel.fetchPayments(
+            page,
+            sort,
+            order,
+            startDate,
+            endDate,
+            status
+        );
 
         const totalPayments = await PaymentModel.find().countDocuments();
         const totalPages = Math.ceil(totalPayments / 10);
-        return {payments, totalPages};
+        return { payments, totalPages };
     },
 };
 
