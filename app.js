@@ -13,6 +13,7 @@ const passport = require("passport");
 const hbs = require("hbs");
 const dotenv = require("dotenv");
 dotenv.config({ path: "config.env" });
+const orderRouter = require("./Components/order/api/pay");
 
 db.connect();
 
@@ -73,11 +74,12 @@ app.use((req, res, next) => {
     if (req.user) res.locals.user = req.user;
     next();
 });
+require("./views/helpers/orderHelpers");
+
 // Routes
 app.use("/", authRouter);
 app.use("/home", homeRouter);
 app.use("/courses", coursesRouter);
 app.use("/users", userRouter);
-app.use("/profile", profileRouter), (module.exports = app);
-
+app.use("/profile", profileRouter), app.use("/orders", orderRouter);
 module.exports = app;

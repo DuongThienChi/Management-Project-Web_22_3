@@ -1,0 +1,202 @@
+<div class="flex items-center justify-center">
+    <div class="bg-white w-full max-w-full max-h-full">
+        <form id="courseForm">
+            <div class="grid grid-cols-1 md:grid-cols-3 md:gap-4">
+                <!-- Title -->
+                <div class="mb-4 md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" id="title" name="Title" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+
+                <!-- Lecturer -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Lecturer</label>
+                    <input type="text" id="lecturer" name="Lecturer" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-4">
+                <!-- Level -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Level</label>
+                    <select id="level" name="Level" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                        <option value="Beginner" {{#if (eq Course.Level 'Beginner')}}selected{{/if}}>Beginner</option>
+                        <option value="Intermediate" {{#if (eq Course.Level 'Intermediate')}}selected{{/if}}>Intermediate</option>
+                        <option value="Advanced" {{#if (eq Course.Level 'Advanced')}}selected{{/if}}>Advanced</option>
+                    </select>
+                </div>
+                
+                <!-- Price -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Price ($)</label>
+                    <input type="number" id="price" name="Price" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+
+                <!-- Duration -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Duration (Weeks)</label>
+                    <input type="number" id="duration" name="Duration" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+            </div>
+
+			<div class="mb-4 grid grid-cols-1 md:grid-cols-3 md:gap-4">
+				<!-- topic -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Topic</label>
+                    <select id="topic" name="Topic" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]"
+                            onchange="handleTopicChange()">
+                        <option value="" class="hidden" disabled selected>Select topic</option>
+						{{#each topics}}
+						<option value="{{this._id}}">{{this.Name}}</option>
+						{{/each}}
+						<option value="Add Topic">... Add Topic</option>
+                    </select>
+                </div>
+
+				<!-- Skill gain -->
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Skill Gain</label>
+					<input type="text" id="skillGain" name="SkillGain" value="Select Skill Gain" onclick="document.getElementById('skillGainDialog').showModal()"
+							class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" >
+                </div>
+			</div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="description" name="Description" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]"></textarea>
+            </div>
+
+            <div id="modules-container">
+
+            </div>
+
+            <!-- Modules -->
+            <button type="button" class="px-4 py-2 bg-gray-300 text-black rounded-lg mb-4 hover:bg-gray-400" onclick="document.getElementById('addModuleDialog').showModal()">Add Module</button>
+
+            <br>
+            <!-- Image -->
+            <div class="mb-4 inline-block">
+                <label class="block text-sm font-medium text-gray-700">Course Image</label>
+                <input type="file" id="image" name="Image" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-between">
+                <button type="button" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400" onclick="cancelAdd()">Cancel</button>
+                <button type="button" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg hover:bg-[#2a55f5]" onclick="addCourse()">Save</button>
+            </div>
+
+        </form>
+
+        <!-- Select Skill dialog -->
+        <dialog id="skillGainDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="skillGainDialog" 
+                    role="dialog" aria-modal="true">
+            <div class="flex items-center justify-between my-4">
+                <!-- Div chứa nút -->
+                <div class="flex">
+                    <button onclick="uncheckAllSkills()" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">
+                        Uncheck All
+                    </button>
+                </div>
+                <!-- Div chứa tiêu đề -->
+                <div class="flex justify-center flex-1">
+                    <h2 class="text-2xl font-semibold">Select Skill Gain</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 flex justify-center" id="skillList"> 
+                {{#each skills}}
+                <div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="{{this._id}}" name="SkillGain" value="{{this.Name}}" class="mr-2 w-6 h-6">
+                        <label for="{{this._id}}">{{this.Name}}</label>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="flex justify-center mt-4">
+                <button onclick="applySkills()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+                    OK
+                </button>
+
+                <button onclick="openModal('addSkillModal')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg mx-4">
+                    Add New Skill
+                </button>
+
+                <button onclick="closeDialog('skillGainDialog')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg">
+                    Cancel
+                </button>
+            </div>
+
+            <div id="addSkillModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white p-6 rounded-lg w-1/3">
+                    <h2 class="text-xl font-bold mb-4">Add New Skill</h2>
+                    <input type="text" id="newSkill" placeholder="Enter skill name"
+                        class="w-full p-2 border border-gray-300 rounded-lg mb-4">
+                    <div class="flex justify-end">
+                        <button onclick="saveNewSkill()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg mr-2">
+                            Save
+                        </button>
+                        <button onclick="closeModal('addSkillModal')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+
+        <!-- Add Module dialog -->
+        <dialog id="addModuleDialog" class="w-4/5 h-4/5 p-6 rounded-lg shadow-lg bg-white" aria-labelledby="addModuleModal" 
+                    role="dialog" aria-modal="true">
+            <!-- Div chứa tiêu đề -->
+            <div class="flex justify-center flex-1">
+                <h2 class="text-2xl font-semibold">Add Module</h2>
+            </div>
+            <div class="mx-16">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Module Name</label>
+                    <input type="text" id="moduleName" name="ModuleName" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">
+                </div>
+                <div>Lesson: </div>
+                <div id="lessonList">
+
+                </div>
+
+                <button type="button" class="px-4 py-2 bg-[#4f75ff] text-white rounded-lg hover:bg-[#2a55f5]"
+                        onclick="AddLesson()">
+                    Add Lesson
+                </button>
+            </div>
+
+            <div class="flex justify-center mt-4">
+                <button onclick="saveModule()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+                    Save
+                </button>
+
+                <button onclick="closeDialog('addModuleDialog')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg mx-4">
+                    Cancel
+                </button>
+            </div>
+        </dialog>
+
+        <div id="addTopicModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded-lg w-1/3">
+                <h2 class="text-xl font-bold mb-4">Add New Topic</h2>
+                <input type="text" id="newTopic" placeholder="Enter topic name"
+                    class="w-full p-2 border border-gray-300 rounded-lg mb-4">
+                <div class="flex justify-end">
+                    <button onclick="saveNewTopic()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg mr-2">
+                        Save
+                    </button>
+                    <button onclick="closeModal('addTopicModal')" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg ">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/javascripts/AddCourseScript.js"></script>

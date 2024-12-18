@@ -22,9 +22,10 @@ const CoursesSchema = new mongoose.Schema({
     },
     ShortDesc: {
         type: String,
-        required: true,
+        required: false,
     },
     Img: {
+        default: "https://via.placeholder.com/150",
         type: String,
         required: true,
     },
@@ -33,6 +34,7 @@ const CoursesSchema = new mongoose.Schema({
         required: true,
     },
     Rate: {
+        default: 0,
         type: Number,
         required: true,
     },
@@ -49,13 +51,14 @@ const CoursesSchema = new mongoose.Schema({
     },
     Modules: {
         type: Array,
-        required: true,
+        required: false,
     },
     Topic: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Topics",
     },
     Sale: {
+        default: 0,
         type: Number,
         required: true,
     },

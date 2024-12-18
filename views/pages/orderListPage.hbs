@@ -1,0 +1,98 @@
+<div class="overflow-x-auto">
+    <h2 class="text-4xl lg:text-5xl font-bold text-left mb-4">Orders List</h2>
+
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mx-4 mb-8"
+            onclick="openFilter()">
+            Filter
+    </button>
+
+    <div class="border border-gray-300 rounded-lg overflow-hidden">
+        <table class="w-full border-collapse">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border border-gray-300 px-4 py-2">No.</th>
+                    <th class="border border-gray-300 px-4 py-2">ID</th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('createdAt')">
+                        Date
+                        <span id="sort-icon-createdAt" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('total')">
+                        Total
+                        <span id="sort-icon-total" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('quantity')">
+                        Quantity
+                        <span id="sort-icon-quantity" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2 cursor-pointer" onclick="applySort('status')">
+                        Status
+                        <span id="sort-icon-status" class="inline-block ml-2"></span>
+                    </th>
+                    <th class="border border-gray-300 px-4 py-2">User</th>
+                    <th class="border border-gray-300 px-4 py-2">Details</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                {{#each orders}}
+                    <tr class="hover:bg-gray-100">
+                        <td class="border border-gray-300 px-4 py-2">{{index @index}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{this._id}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{createdDate this.createdAt}}</td>
+                        <td class="border border-gray-300 px-4 py-2">${{this.total}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{this.items.length}}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="{{statusClass this.status}}">
+                                {{this.status}}
+                            </span>
+                        </td>
+
+                        <td class="border border-gray-300 px-4 py-2">{{this.userId.username}}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <a href="/order/details/{{this._id}}" class="text-blue-500 hover:underline">Details</a>
+                        </td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{{!-- // make a dialog for date filter: from, to and is, is not --}}
+<div id="filterDialog" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 hidden">
+    <div class="w-11/12 md:w-1/2 lg:w-1/3 bg-white rounded-lg p-8 mx-auto mt-24">
+        <h2 class="text-2xl font-bold text-center mb-4">Filter Orders</h2>
+        <!-- date format: dd/mm/yyyy -->
+        <form id="filterForm" class="flex flex-col">
+            <div class="flex flex-col mb-4">
+                <label for="from" class="text-lg font-semibold mb-2">From</label>
+                <input type="date" id="from" name="from" class="border border-gray-300 rounded-lg p-2">
+            </div>
+            <div class="flex flex-col mb-4">
+                <label for="to" class="text-lg font-semibold mb-2">To</label>
+                <input type="date" id="to" name="to" class="border border-gray-300 rounded-lg p-2">
+            </div>
+            <div class="flex flex-col mb-4">
+                <label for="status" class="text-lg font-semibold mb-2">Status</label>
+                <select id="status" name="status" class="border border-gray-300 rounded-lg p-2">
+                    <option value="">All</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="flex justify-between">
+                <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg"
+                        onclick="closeFilter()">
+                        Cancel
+                </button>
+                <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                        onclick="applyFilter()">
+                        Apply
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/javascripts/OrderListScript.js"></script>

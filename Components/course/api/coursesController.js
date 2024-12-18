@@ -59,34 +59,132 @@ const CourseController = {
             });
         }
     },
-    UpdateCourse : async (req, res) => {
+
+    UpdateCourse: async (req, res) => {
         const courseId = req.params.id; // Lấy ID từ URL ("/courses/:id/update")
         const { Title, Duration, Level, Description, Price } = req.body;
-    
+
         if (!courseId) {
-            return res.status(400).json({ success: false, message: 'Course ID is required' });
+            return res
+                .status(400)
+                .json({ success: false, message: "Course ID is required" });
         }
-    
+
         try {
-            const updatedCourse = await Course.updateOne({ _id: courseId }, {
-                Title,
-                Duration,
-                Level,
-                Description,
-                Price
-            });
-    
+            const updatedCourse = await Course.updateOne(
+                { _id: courseId },
+                {
+                    Title,
+                    Duration,
+                    Level,
+                    Description,
+                    Price,
+                }
+            );
+
             if (updatedCourse.modifiedCount === 0) {
-                return res.status(400).json({ success: false, message: 'No course was updated' });
+                return res
+                    .status(400)
+                    .json({ success: false, message: "No course was updated" });
             }
-    
-            res.json({ success: true, message: 'Course updated successfully!' });
+
+            res.json({
+                success: true,
+                message: "Course updated successfully!",
+            });
         } catch (error) {
-            console.error('Error updating course:', error);
-            res.status(500).json({ success: false, message: 'An error occurred while updating the course' });
+            console.error("Error updating course:", error);
+            res.status(500).json({
+                success: false,
+                message: "An error occurred while updating the course",
+            });
+        }
+    },
+
+    ShowAddCoursePage: async (req, res) => {
+        const { topics, skills } = await CourseService.getTopicAndSkill();
+        res.render("pages/AddCoursePage", {
+            title: "Add Course",
+            topics,
+            skills,
+            showSidebar: true,
+            showTopbar: true,
+        });
+    },
+
+    AddNewSkill: async (req, res) => {
+        try {
+            const { newSkill } = req.body;
+            const result = await CourseService.addNewSkill(newSkill);
+            res.status(StatusCodes.OK).json({ success: true, result });
+        } catch (error) {
+            console.error("Error adding new skill:", error);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                success: false,
+                message: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+            });
+        }
+    },
+
+    AddNewTopic: async (req, res) => {
+        try {
+            const { newTopic } = req.body;
+            const result = await CourseService.addNewTopic(newTopic);
+            res.status(StatusCodes.OK).json({ success: true, result });
+        } catch (error) {
+            console.error("Error adding new topic:", error);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                success: false,
+                message: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+            });
+        }
+    },
+
+    AddCourse: async (req, res) => {
+        try {
+            // get data from form
+            const {
+                title,
+                duration,
+                level,
+                description,
+                price,
+                topic,
+                skillGain,
+                lecturer,
+                modules,
+            } = req.body;
+
+            const Modules = JSON.parse(modules);
+            // Lấy file ảnh từ request
+            const file = req.file;
+
+            const result = await CourseService.addNewCourse({
+                Title: title,
+                Duration: duration,
+                Level: level,
+                Description: description,
+                Price: price,
+                Topic: topic,
+                SkillGain: skillGain,
+                Lecturer: lecturer,
+                Img: file,
+            });
+
+            if (Modules && Modules.length > 0) {
+                for (const module of Modules) {
+                    await CourseService.addNewModule(result._id, module);
+                }
+            }
+            res.status(StatusCodes.OK).json({ success: true, result });
+        } catch (error) {
+            console.error("Error adding new course:", error);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                success: false,
+                message: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
+            });
         }
     },
 };
-    
 
 module.exports = CourseController;

@@ -1,7 +1,36 @@
 const CourseModel = require("../data-access/CourseModel");
+const LessonModel = require("../data-access/LessonModel");
+const ModuleModel = require("../data-access/ModuleModel");
 const SkillModel = require("../data-access/SkillModel");
 const TopicModel = require("../data-access/TopicModel");
+const supabase = require("../../../config/supabase");
 const mongoose = require("mongoose");
+
+async function uploadImage(file, filePath) {
+    try {
+        const { data, error } = await supabase.storage
+            .from('SkillBoost')
+            .upload(filePath, file.buffer, {
+                contentType: file.mimetype,
+                upsert: true,
+                public: true,
+            });
+
+        if (error) {
+            console.error('Detailed Supabase Error:', {
+                message: error.message,
+                details: error.details,
+                code: error.code
+            });
+            throw error;
+        }
+
+        return data;
+    } catch (err) {
+        console.error('Full Error Object:', err);
+        throw err;
+    }
+}
 
 const CourseService = {
     getCourses: async (
@@ -103,6 +132,64 @@ const CourseService = {
             Course: Course[0],
             relevantCourses,
         };
+    },
+
+    getTopicAndSkill: async () => {
+        const topics = await TopicModel.GetAllTopics();
+        const skills = await SkillModel.GetAllSkills();
+        return { topics, skills };
+    },
+
+    addNewSkill: async (skillName) => {
+        const newSkill = await SkillModel.create({ Name: skillName });
+        return newSkill;
+    },
+
+    addNewTopic: async (topicName) => {
+        const newTopic = await TopicModel.create({ Name: topicName });
+        return newTopic;
+    },
+
+    addNewCourse: async (course) => {
+        try {
+            // get today
+            const date = new Date();
+            const sanitizedTitle = course.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const filePath = `CourseImage/${date.getTime()}_${sanitizedTitle}`;
+            await uploadImage(course.Img, filePath);
+    
+            const { data } = supabase.storage
+                .from("SkillBoost")
+                .getPublicUrl(filePath);
+    
+            course.Img = data.publicUrl;
+            const skills = course.SkillGain.split(",");
+            course.SkillGain = [];
+            course.SkillGain = skills.map((skill) => new mongoose.Types.ObjectId(skill));
+            course.Topic = new mongoose.Types.ObjectId(course.Topic);
+    
+            const newCourse = await CourseModel.create(course);
+            return newCourse;
+        } catch (error) {
+            throw error;
+        }
+    },
+    
+
+    addNewModule: async (courseId, module) => {
+        const newModule = await ModuleModel.create({
+            CourseId: courseId,
+            ModuleName: module.moduleName,
+        });
+        for (const lesson of module.lessons) {
+            const duration = parseInt(lesson.lessonDuration);
+            await LessonModel.create({
+                ModuleId: newModule._id,
+                LessonName: lesson.lessonName,
+                Duration: duration,
+            });
+        }
+        return newModule;
     },
 };
 
