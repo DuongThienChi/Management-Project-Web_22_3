@@ -7,7 +7,12 @@ const authRouter = require("./Components/auth/api/authRoutes");
 const coursesRouter = require("./Components/course/api/course");
 const homeRouter = require("./Components/Home/api/home");
 const profileRouter = require("./Components/profile/api/profileRoutes");
+const userRouter = require("./Components/users/api/user");
+const MongoStore = require("connect-mongo");
+const passport = require("passport");
 const hbs = require("hbs");
+const dotenv = require("dotenv");
+dotenv.config({ path: "config.env" });
 
 db.connect();
 
@@ -18,6 +23,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 hbs.registerPartials(path.join(__dirname, "views/partials"));
+//helpers
+require("./views/helpers/format");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,8 +54,16 @@ hbs.registerHelper("json", function (context) {
     return JSON.stringify(context);
 });
 
+// Cấu hình flash messages
 app.use(flash());
-
+app.use((req, res, next) => {
+    res.locals.successMessage = req.flash("successMessage");
+    res.locals.errorMessage = req.flash("errorMessage");
+    res.locals.warningMessage = req.flash("warningMessage");
+    res.locals.existUser = req.flash("existUser");
+    res.locals.existMail = req.flash("existMail");
+    next();
+});
 // Đăng ký helper 'eq'
 hbs.registerHelper("eq", function (a, b) {
     return a === b;
@@ -61,6 +77,7 @@ app.use((req, res, next) => {
 app.use("/", authRouter);
 app.use("/home", homeRouter);
 app.use("/courses", coursesRouter);
+app.use("/users", userRouter);
 app.use("/profile", profileRouter), (module.exports = app);
 
 module.exports = app;
