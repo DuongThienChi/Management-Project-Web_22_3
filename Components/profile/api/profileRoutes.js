@@ -8,7 +8,7 @@ router.get("/", ensureAuthenticated, profileController.GetProfilePage);
 router.post(
     "/update",
     ensureAuthenticated,
-    upload.single("image"),
+    upload.single("Image"),
     profileController.UpdateProfile
 );
 

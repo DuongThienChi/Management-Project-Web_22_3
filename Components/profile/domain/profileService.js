@@ -1,5 +1,6 @@
 const User = require("../../auth/data-access/AdminModel");
 const bcrypt = require("bcrypt");
+const supabase = require("../../../config/supabase");
 
 async function uploadImage(file, filePath) {
     try {
@@ -71,12 +72,11 @@ const profileService = {
             }
             if (Img) {
                 const date = new Date();
-                const sanitizedTitle = course.Title.replace(
-                    /[^a-z0-9]/gi,
-                    "_"
-                ).toLowerCase();
+                const sanitizedTitle = user.name
+                    ?.replace(/[^a-z0-9]/gi, "_")
+                    .toLowerCase();
                 const filePath = `Avatar/${date.getTime()}_${sanitizedTitle}`;
-                await uploadImage(course.Img, filePath);
+                await uploadImage(Img, filePath);
 
                 const { data } = supabase.storage
                     .from("SkillBoost")

@@ -390,7 +390,6 @@ function addCourse() {
     formData.append("modules", JSON.stringify(modules));
     formData.append("image", file);
 
-
     xhr = new XMLHttpRequest();
     xhr.open("POST", "/courses/Add/newCourse", true);
     xhr.onreadystatechange = function () {
