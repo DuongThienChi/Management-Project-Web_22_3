@@ -16,13 +16,16 @@ const adminSchema = new mongoose.Schema(
             unique: true,
         },
         name: {
-            type:String,
+            type: String,
         },
         address: {
-            type:String,
+            type: String,
         },
         contact: {
-            type:String,
+            type: String,
+        },
+        Img: {
+            type: String,
         },
         verify: {
             type: Boolean,

@@ -10,13 +10,21 @@
     </button>
   
     <div class="relative">
+      {{#if user.Img}}
+      <img
+        src="{{user.Img}}"
+        alt="User"
+        class="w-10 h-10 rounded-full cursor-pointer"
+        onclick="toggleDropdown()"
+        />
+      {{else}}
       <img
         src="https://via.placeholder.com/40"
         alt="User"
         class="w-10 h-10 rounded-full cursor-pointer"
         onclick="toggleDropdown()"
         />
- 
+      {{/if}}
       <div
         id="dropdown"
         class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10"

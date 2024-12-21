@@ -43,6 +43,7 @@ passport.serializeUser((user, done) => {
         id: user.id,
         username: user.username,
         email: user.email,
+        Img: user.Img,
     });
 });
 
