@@ -14,6 +14,7 @@ const hbs = require("hbs");
 const dotenv = require("dotenv");
 dotenv.config({ path: "config.env" });
 const orderRouter = require("./Components/order/api/pay");
+const reportRouter = require("./Components/report/api/report");
 
 db.connect();
 
@@ -83,4 +84,5 @@ app.use("/courses", coursesRouter);
 app.use("/users", userRouter);
 app.use("/profile", profileRouter);
 app.use("/orders", orderRouter);
+app.user("/report", reportRouter);
 module.exports = app;
