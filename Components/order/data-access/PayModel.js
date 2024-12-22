@@ -34,8 +34,15 @@ const paymentSchema = new mongoose.Schema({
     },
 });
 
-paymentSchema.statics.fetchPayments = async function (page, sort, order, startDate, endDate, status) {
-    const limit = 10;
+paymentSchema.statics.fetchPayments = async function (
+    page,
+    sort,
+    order,
+    startDate,
+    endDate,
+    status
+) {
+    const limit = 15;
     const skip = (page - 1) * limit;
     let query = {};
 
@@ -64,18 +71,24 @@ paymentSchema.statics.fetchPayments = async function (page, sort, order, startDa
                 },
             },
             {
-                //just get userId and username from userId
+                $addFields: {
+                    status: {
+                        $ifNull: ["$status", "pending"],
+                    },
+                },
+            },
+            {
                 $project: {
                     userId: {
                         $let: {
                             vars: {
-                                user: { $arrayElemAt: ["$userId", 0] }
+                                user: { $arrayElemAt: ["$userId", 0] },
                             },
                             in: {
                                 _id: "$$user._id",
-                                username: "$$user.username"
-                            }
-                        }
+                                username: "$$user.username",
+                            },
+                        },
                     },
                     quantity: {
                         $size: "$items",
