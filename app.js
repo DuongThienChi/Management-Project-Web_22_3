@@ -84,5 +84,5 @@ app.use("/courses", coursesRouter);
 app.use("/users", userRouter);
 app.use("/profile", profileRouter);
 app.use("/orders", orderRouter);
-app.user("/report", reportRouter);
+app.use("/report", reportRouter);
 module.exports = app;

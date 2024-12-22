@@ -3,7 +3,7 @@ const reportService = require("../domain/reportService");
 const reportController = {
     getReportOrder: async (req, res) => {
         try {
-            const report = await reportService.getReportOrder();
+            const report = await reportService.getReportOrder(req, res);
             res.status(200).json({
                 success: true,
                 message: "Report order retrieved successfully",

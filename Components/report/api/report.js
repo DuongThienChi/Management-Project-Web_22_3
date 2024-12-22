@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const reportController = require("./reportController");
 
-router.get("/order", reportController.getReportOrder);
+router.post("/order", reportController.getReportOrder);
 
 module.exports = router;
