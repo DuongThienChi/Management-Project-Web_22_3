@@ -73,6 +73,7 @@ function updateSelectedOptions() {
 let dataReport = [];
 let labels = [];
 let chartInstance = null;
+let courses = [];
 async function fetchData(data) {
     try {
         const response = await fetch("/report/order", {
@@ -85,6 +86,7 @@ async function fetchData(data) {
         if (response.success) {
             const filterValue = filterSelect.value;
             dataReport = response.report.map((item) => item.total);
+            courses = response.courses;
             labels = response.report.map((item) => {
                 const date = new Date(item.createdAt);
                 if (filterValue === "daypicker") {
@@ -162,6 +164,7 @@ async function fetchData(data) {
                     },
                 },
             });
+            renderFeatureProduct(courses);
         } else {
             console.log("Error fetching data:", response.message);
         }
@@ -172,4 +175,110 @@ async function fetchData(data) {
 filterSelect.addEventListener("change", updateSelectedOptions);
 // Initialize options on page load
 updateSelectedOptions();
+function renderFeatureProduct(products) {
+    const productSlider = document.getElementById("productSlider");
+
+    if (products.length > 0) {
+        productSlider.innerHTML = `
+        <div class="relative overflow-hidden">
+            <!-- Nút trái -->
+            <button
+                id="prevButton"
+                class="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-200 text-gray-600 p-2 rounded-full shadow focus:outline-none z-10"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Slider -->
+            <div id="slider" class="flex transition-transform duration-500">
+                ${products
+                    .map(
+                        (product) => `
+                        <div class="w-full flex-shrink-0 text-center">
+                            <img src="${product.Img}" alt="${product.Title}" class="w-full h-48 object-cover rounded-lg mb-4">
+                            <h3 class="text-lg font-semibold">${product.Title}</h3>
+                            <p class="text-blue-600 font-bold mt-2">$${product.Price}</p>
+                        </div>
+                    `
+                    )
+                    .join("")}
+            </div>
+
+            <!-- Nút phải -->
+            <button
+                id="nextButton"
+                class="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 text-gray-600 p-2 rounded-full shadow focus:outline-none z-10"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+        `;
+
+        const slider = document.getElementById("slider");
+        const slides = slider.children;
+        const totalSlides = slides.length;
+        const prevButton = document.getElementById("prevButton");
+        const nextButton = document.getElementById("nextButton");
+
+        let currentSlide = 0;
+        const autoSlideInterval = 2000; // Thời gian tự động chuyển slide (ms)
+        let autoSlideTimer;
+
+        function updateSlider() {
+            const translateX = -(currentSlide * 100);
+            slider.style.transform = `translateX(${translateX}%)`;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides; // Quay lại slide đầu nếu hết
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; // Quay lại slide cuối nếu lùi quá
+            updateSlider();
+        }
+
+        // Bắt sự kiện cho các nút
+        nextButton.addEventListener("click", function () {
+            nextSlide();
+            restartAutoSlide(); // Reset lại thời gian tự động chuyển slide khi người dùng bấm
+        });
+
+        prevButton.addEventListener("click", function () {
+            prevSlide();
+            restartAutoSlide(); // Reset lại thời gian tự động chuyển slide khi người dùng bấm
+        });
+
+        // Hàm tự động chuyển slide
+        function startAutoSlide() {
+            autoSlideTimer = setInterval(nextSlide, autoSlideInterval);
+        }
+
+        function stopAutoSlide() {
+            clearInterval(autoSlideTimer);
+        }
+
+        function restartAutoSlide() {
+            stopAutoSlide();
+            startAutoSlide();
+        }
+
+        // Khởi chạy tự động chuyển slide
+        startAutoSlide();
+
+        // Dừng tự động chuyển slide khi người dùng di chuột vào slider
+        slider.addEventListener("mouseenter", stopAutoSlide);
+
+        // Tiếp tục tự động chuyển slide khi người dùng rời chuột khỏi slider
+        slider.addEventListener("mouseleave", startAutoSlide);
+    } else {
+        productSlider.innerHTML = `<p class="text-center text-gray-600">No products found</p>`;
+    }
+}
+
 window.onload = () => fetchData({ day: curDate.toISOString().split("T")[0] });
