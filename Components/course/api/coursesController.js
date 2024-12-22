@@ -1,32 +1,22 @@
 const CourseService = require("../domain/courseService");
 const { StatusCodes, getReasonPhrase } = require("http-status-codes");
 const Course = require("../data-access/CourseModel");
+const mongoose = require("mongoose");
 
 // Function to fetch and display courses with pagination
 const CourseController = {
     getCourses: async (req, res) => {
+        
         try {
-            const { search, topic, skill, level, price, sort, order, page } =
-                req.query;
-            const CoursesData = await CourseService.getCourses(
-                search,
-                topic,
-                skill,
-                level,
-                price,
-                sort,
-                order,
-                page
-            );
-
+            const { search, sort, page, format } = req.query;  
+            const CoursesData = await CourseService.getCourseListInfo(search, sort, page);
+            console.log("Retrieved Courses:", CoursesData.courses);
             res.render("pages/course", {
                 courses: CoursesData.courses,
                 currentPage: CoursesData.currentPage,
-                totalPages: CoursesData.totalPages,
-                prevPage: CoursesData.prevPage,
-                nextPage: CoursesData.nextPage,
-                isFirstPage: CoursesData.isFirstPage,
-                isLastPage: CoursesData.isLastPage,
+                totalItem: CoursesData.totalItem,
+                startItem: CoursesData.startItem,
+                endItem: CoursesData.endItem,
                 topics: CoursesData.topics,
                 skills: CoursesData.skills,
                 showSidebar: true,
@@ -37,15 +27,36 @@ const CourseController = {
             res.status(500).send("An error occurred while fetching courses.");
         }
     },
+    GetCourseListData: async (req, res) => {
+        try {
+            const { search, sort, page } = req.query;
 
+            const coursesData = await CourseService.getCourseListInfo(
+                search,
+                sort,
+                page
+            );
+            res.json(coursesData);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            res.status(500).send("An error occurred while fetching users.");
+        }
+    },
     GetCourseDetail: async (req, res) => {
         try {
-            const CourseId = req.params.id;
+            const CourseId = req.params.id;  // Ensure this is correct
+            
+            // Validate the courseId
+            if (!mongoose.Types.ObjectId.isValid(CourseId)) {
+                return res.status(400).json({
+                    message: "Invalid course ID",
+                });
+            }
+
             req.session.courseId = CourseId; // Store the courseId in the session
 
-            const { title, Course, relevantCourses } =
-                await CourseService.getCourseDetail(CourseId);
-
+            const { title, Course, relevantCourses } = await CourseService.getCourseDetail(CourseId);
+            
             return res.status(StatusCodes.OK).render("pages/courseedit", {
                 title: title,
                 Course: Course,
@@ -53,6 +64,7 @@ const CourseController = {
                 showSidebar: true,
                 showTopbar: true,
             });
+
         } catch (error) {
             console.error("Error fetching course detail:", error);
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -70,7 +82,7 @@ const CourseController = {
                 .json({ success: false, message: "Course ID is required" });
         }
 
-        const { Title, Duration, Level, Description, Price } = req.body;
+        const { Title, Duration, Level, Description, Price, Sale, Rate, Lecturer } = req.body;
 
         try {
             const updatedCourse = await Course.updateOne(
@@ -81,6 +93,9 @@ const CourseController = {
                     Level,
                     Description,
                     Price,
+                    Sale,
+                    Rate,
+                    Lecturer 
                 }
             );
 

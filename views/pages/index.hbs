@@ -1,1 +1,32 @@
-<h1>{{user.username}}</h1>
+<h1>{{title}}</h1>
+
+{{#if error}}
+  <div style="color: red;">{{error}}</div>
+{{else}}
+  <h2>Data Loaded Successfully</h2>
+{{/if}}
+
+{{#if analyticsData.length}}
+  <table border="1">
+    <tr>
+      <th>Page Title</th>
+      <th>Screen Resolution</th>
+      <th>Country</th>
+      <th>New Users</th>
+      <th>Sessions</th>
+      <th>Screen Page Views</th> <!-- Cập nhật tên trường -->
+    </tr>
+    {{#each analyticsData}}
+      <tr>
+        <td>{{this.pageTitle}}</td>
+        <td>{{this.screenResolution}}</td>
+        <td>{{this.country}}</td>
+        <td>{{this.newUsers}}</td>
+        <td>{{this.sessions}}</td>
+        <td>{{this.screenPageViews}}</td> <!-- Cập nhật tên trường -->
+      </tr>
+    {{/each}}
+  </table>
+{{else}}
+  <p>No data available</p>
+{{/if}}

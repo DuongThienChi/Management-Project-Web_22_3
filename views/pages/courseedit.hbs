@@ -5,19 +5,20 @@
       <div class="flex items-center justify-center mb-6">
         <img id="courseImagePreview" src="https://via.placeholder.com/80" alt="Course Image" class="rounded-lg w-32 h-32 object-cover">
         <input type="file" id="courseImage" name="Img" accept="image/*" class="hidden" onchange="previewImage(event)">
-       
       </div>
 
       <!-- Title -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Title</label>
         <input type="text" id="title" name="Title" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" value="{{Course.Title}}">
+        <span id="titleError" class="text-red-500 text-sm hidden">Please enter a valid title.</span>
       </div>
 
       <!-- Duration -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Duration (Weeks)</label>
         <input type="number" id="duration" name="Duration" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" value="{{Course.Duration}}">
+        <span id="durationError" class="text-red-500 text-sm hidden">Please enter a valid duration (positive number).</span>
       </div>
 
       <!-- Level -->
@@ -28,18 +29,44 @@
           <option value="Intermediate" {{#if (eq Course.Level 'Intermediate')}}selected{{/if}}>Intermediate</option>
           <option value="Advanced" {{#if (eq Course.Level 'Advanced')}}selected{{/if}}>Advanced</option>
         </select>
+         <span id="levelError" class="text-red-500 text-sm hidden">Please select a valid level.</span>
       </div>
 
       <!-- Description -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Description</label>
         <textarea id="description" name="Description" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]">{{Course.Description}}</textarea>
+        <span id="descError" class="text-red-500 text-sm hidden">Please enter a valid description.</span>
       </div>
 
       <!-- Price -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700">Price ($)</label>
         <input type="number" id="price" name="Price" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" value="{{Course.Price}}">
+        <span id="priceError" class="text-red-500 text-sm hidden">Please enter a valid price.</span>
+
+      </div>
+
+      <!-- Sale -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Sale (%)</label>
+        <input type="number" id="sale" name="Sale" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" value="{{Course.Sale}}">
+        <span id="saleError" class="text-red-500 text-sm hidden">Please enter a valid price.</span>
+
+      </div>
+
+      <!-- Rating -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Rating</label>
+        <input type="number" step="0.1" id="rating" name="Rate" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" value="{{Course.Rate}}">
+        <span id="ratingError" class="text-red-500 text-sm hidden">Please enter a valid rating (0-5).</span>
+      </div>
+
+      <!-- Lecturer -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">Lecturer</label>
+        <input type="text" id="lecturer" name="Lecturer" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-[#4f75ff] focus:border-[#4f75ff]" value="{{Course.Lecturer}}">
+        <span id="lecturerError" class="text-red-500 text-sm hidden">Please enter a valid lecture.</span>
       </div>
 
       <!-- Buttons -->
@@ -52,36 +79,70 @@
 </div>
 
 <script>
-  function cancelEdit() {
-    window.location.href = '/courses'; // Redirect to the courses list page
-  }
-
-  function previewImage(event) {
-    const reader = new FileReader();
-    reader.onload = function () {
-      const output = document.getElementById('courseImagePreview');
-      output.src = reader.result;
-    };
-    reader.readAsDataURL(event.target.files[0]);
-  }
-
   document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('courseForm').addEventListener('submit', async function (event) {
     event.preventDefault();
 
+    // Clear previous error messages
+    clearErrors();
+
+    let valid = true;
+
+    // Validate Title
+    const title = document.getElementById('title').value;
+    if (!title) {
+      document.getElementById('titleError').classList.remove('hidden');
+      valid = false;
+    }
+
+    // Validate Duration (positive number)
+    const duration = document.getElementById('duration').value;
+    if (isNaN(duration) || duration <= 0) {
+      document.getElementById('durationError').classList.remove('hidden');
+      valid = false;
+    }
+
+    // Validate Price (positive number)
+    const price = document.getElementById('price').value;
+    if (isNaN(price) || price < 0) {
+      document.getElementById('priceError').classList.remove('hidden');
+      valid = false;
+    }
+
+    // Validate Sale (0-100)
+    const sale = document.getElementById('sale').value;
+    if (isNaN(sale) || sale < 0 || sale > 100) {
+      document.getElementById('saleError').classList.remove('hidden');
+      valid = false;
+    }
+
+    // Validate Rating (0-5)
+    const rating = document.getElementById('rating').value;
+    if (isNaN(rating) || rating < 0 || rating > 5) {
+      document.getElementById('ratingError').classList.remove('hidden');
+      valid = false;
+    }
+
+    if (!valid) {
+      return; // Stop form submission if validation failed
+    }
+
+    // Process form data if all fields are valid
     const path = window.location.pathname;
     const pathSegments = path.split('/');
     const courseId = pathSegments.length > 2 ? pathSegments[2] : null;
 
-
     const formData = {
-      CourseID: courseId,
-      Title: document.getElementById('title').value,
-      Duration: document.getElementById('duration').value,
-      Level: document.getElementById('level').value,
-      Description: document.getElementById('description').value,
-      Price: document.getElementById('price').value,
-    };
+        CourseID: courseId,
+        Title: document.getElementById('title').value,
+        Duration: document.getElementById('duration').value,
+        Level: document.getElementById('level').value,
+        Description: document.getElementById('description').value,
+        Price: document.getElementById('price').value,
+        Sale: document.getElementById('sale').value,
+        Rate: document.getElementById('rating').value,
+        Lecturer: document.getElementById('lecturer').value,
+      };
 
     try {
       const response = await fetch(`/courses/edit/update`, {
@@ -96,12 +157,22 @@
 
       if (result.success) {
         window.location.href = '/courses';
-      } 
+      }
     } catch (error) {
       console.error('Error:', error);
     }
   });
 });
 
+// Function to clear error messages
+function clearErrors() {
+  const errorMessages = document.querySelectorAll('.text-red-500');
+  errorMessages.forEach(error => {
+    error.classList.add('hidden');
+  });
+}
 
 </script>
+
+
+

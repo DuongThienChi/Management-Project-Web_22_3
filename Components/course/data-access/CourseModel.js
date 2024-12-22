@@ -166,7 +166,7 @@ CoursesSchema.statics.GetCoursesByFilter = async function (
     order = "asc",
     page = 1
 ) {
-    const ITEMS_PER_PAGE = 6;
+    const ITEMS_PER_PAGE = 50;
 
     const query = await this.createCourseQuery({
         search,

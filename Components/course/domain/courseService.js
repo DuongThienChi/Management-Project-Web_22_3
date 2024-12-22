@@ -33,96 +33,54 @@ async function uploadImage(file, filePath) {
 }
 
 const CourseService = {
-    getCourses: async (
-        search,
-        topic,
-        skill,
-        level,
-        price,
-        sort,
-        order,
-        page
-    ) => {
-        const coursesQuery = await CourseModel.GetCoursesByFilter(
-            search,
-            topic,
-            skill,
-            level,
-            price,
-            sort,
-            order,
-            page
-        );
 
-        const topics = await TopicModel.GetAllTopics();
-        const skills = await SkillModel.GetAllSkills();
+    getCourseListInfo: async (search, sort, page) => {
+        const limit = 5;  // số bản ghi mỗi trang
+        const currentPage = parseInt(page) || 1;
+        const startIndex = (currentPage - 1) * limit;  // số bản ghi đã bỏ qua
+        const endIndex = currentPage * limit;  // giới hạn số bản ghi
+
+        const sortOptions = {
+            Title_asc: { Title: 1 },
+            Title_desc: { Title: -1 },
+            Price_asc: { Price: 1 },
+            Price_desc: { Price: -1 },
+            Duration_asc: { Duration: 1 },
+            Duration_desc: { Duration: -1 },
+        };
+
+        const sortQuery = sortOptions[sort];
+
+        const courses = await CourseModel.find({
+            Title: { $regex: search || "", $options: "i" },
+        })
+            .limit(limit)
+            .skip(startIndex)
+            .sort(sortQuery);
+
+        const totalItem = await CourseModel.countDocuments({
+            Title: { $regex: search || "", $options: "i" },
+        });
 
         return {
-            courses: coursesQuery.courses,
-            currentPage: page || 1,
-            totalPages: coursesQuery.totalPages,
-            isFirstPage: page == 1 || !page,
-            isLastPage: page == coursesQuery.totalPages,
-            topics,
-            skills,
+            courses,
+            currentPage,
+            totalItem,
+            startItem: startIndex + 1,
+            endItem: endIndex > totalItem ? totalItem : endIndex,
         };
-    },
 
+    },
     getCourseDetail: async (courseId) => {
+        // Validate if courseId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            throw new Error("Invalid course ID");
+        }
+
         const Course = await CourseModel.aggregate([
             { $match: { _id: new mongoose.Types.ObjectId(courseId) } },
-            {
-                $lookup: {
-                    from: "Skills",
-                    localField: "SkillGain",
-                    foreignField: "_id",
-                    as: "SkillGain",
-                },
-            },
-            {
-                $lookup: {
-                    from: "Modules",
-                    localField: "_id", // `_id` của Course
-                    foreignField: "CourseId", // `CourseId` của Module
-                    as: "Modules", // Gắn Modules vào kết quả
-                },
-            },
-
-            {
-                $unwind: {
-                    path: "$Modules", // Tách các modules ra từng tài liệu
-                    preserveNullAndEmptyArrays: true, // Giữ lại Course nếu không có Module
-                },
-            },
-
-            {
-                $lookup: {
-                    from: "Lessons",
-                    localField: "Modules._id", // `_id` của Module
-                    foreignField: "ModuleId", // `ModuleId` của Lessons
-                    as: "Modules.Lessons", // Gắn Lessons vào từng Module
-                },
-            },
-
-            {
-                $group: {
-                    _id: "$_id", // Group lại theo `_id` của course
-                    Title: { $first: "$Title" },
-                    SkillGain: { $first: "$SkillGain" },
-                    Topic: { $first: "$Topic" },
-                    Modules: { $push: "$Modules" }, // Gom tất cả các module vào mảng Modules
-                    Duration: { $first: "$Duration" },
-                    Level: { $first: "$Level" },
-                    Description: { $first: "$Description" },
-                    Img: { $first: "$Img" },
-                    Price: { $first: "$Price" },
-                    Rate: { $first: "$Rate" },
-                    Lecturer: { $first: "$Lecturer" },
-                },
-            },
+            // ... rest of your aggregation pipeline
         ]);
-
-        console.log(Course[0]);
 
         const relevantCourses = await CourseModel.GetAllRelevantCourses(
             Course[0]._id
