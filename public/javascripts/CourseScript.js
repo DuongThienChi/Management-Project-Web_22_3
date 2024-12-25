@@ -1,10 +1,6 @@
-// Pagination logic
 function changePage(page) {
-    // Get the current page from the URL
     const url = new URL(window.location.href);
     const params = new URLSearchParams(url.search);
-
-    // Get the current page number from the query parameters or set to 1 if not provided
     let currentPage = parseInt(params.get("page")) || 1;
 
     if (page === "prev") {
@@ -13,260 +9,34 @@ function changePage(page) {
         currentPage += 1;
     }
 
-    // page transitions
     currentPage = Math.max(currentPage, 1);
     params.set("page", currentPage);
-    url.search = params.toString();
-    window.location.href = url.toString();
+    window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${params.toString()}`
+    );
+
+    // Fetch new data based on updated page number
+    fetchCoursesData(params);
 }
 
-// Đối tượng lưu các mục đã chọn
-const selectedItems = {
-    topic: [],
-    price: [],
-    level: [],
-    skill: [],
-};
+document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("search");
 
-// Theo dõi dropdown hiện tại
-let activeDropdown = null;
-
-// Hàm mở/đóng dropdown
-function toggleDropdown(field) {
-    const dropdown = document.getElementById(`dropdown-${field}`);
-
-    if (activeDropdown && activeDropdown !== dropdown) {
-        activeDropdown.classList.add("hidden");
-    }
-
-    // Kiểm tra xem dropdown có đang mở không
-    const isHidden = dropdown.classList.contains("hidden");
-    // Đóng tất cả dropdown khác
-    document
-        .querySelectorAll(".dropdown")
-        .forEach((item) => item.classList.add("hidden"));
-    // Nếu dropdown đang ẩn thì mở nó, nếu đã mở thì ẩn đi
-    if (isHidden) {
-        dropdown.classList.remove("hidden");
-        activeDropdown = dropdown;
-    } else {
-        dropdown.classList.add("hidden");
-        activeDropdown = null;
-    }
-}
-window.addEventListener("DOMContentLoaded", (event) => {
-    updateSliderProgress(); // Đảm bảo tiến độ thanh range được cập nhật khi trang được tải
-});
-// Hàm xử lý khi chọn một item từ dropdown
-function toggleSelection(item, field) {
-    const selectedContainer = document.getElementById(`${field}-tags`);
-    const dropdown = document.getElementById(`dropdown-${field}`);
-
-    // Kiểm tra nếu item đã được chọn
-    if (selectedItems[field].includes(item)) {
-        removeSelection(item, field);
-    } else {
-        selectedItems[field].push(item);
-        showButtonSubmit();
-    }
-
-    // Cập nhật giao diện
-    updateTags(selectedContainer, field);
-    // Đóng dropdown
-    dropdown.classList.add("hidden");
-}
-
-// Hàm cập nhật thẻ (tags)
-function updateTags(container, field) {
-    container.innerHTML = ""; // Xóa các tag cũ
-
-    if (field === "price") {
-        const minPrice = selectedItems[field][0];
-        const maxPrice = selectedItems[field][1];
-        if (minPrice && maxPrice) {
-            const tag = document.createElement("span");
-            tag.className =
-                "px-2 py-1 bg-[#4f75ff] text-white rounded-full flex items-center";
-            tag.innerHTML = `From $${minPrice} to $${maxPrice} <button class="ml-2" onclick="removeSelection('${minPrice}', '${field}')">&times;</button>`;
-            container.appendChild(tag);
-            return;
+    searchInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            searchCourses();
         }
-    }
-
-    if (selectedItems[field].length === 0) {
-        const span = document.createElement("span");
-        container.appendChild(span);
-    } else {
-        selectedItems[field].forEach((item) => {
-            const tag = document.createElement("span");
-            tag.className =
-                "px-2 py-1 bg-[#4f75ff] text-white rounded-full flex items-center";
-            tag.innerHTML = `${item} <button class="ml-2" onclick="removeSelection('${item}', '${field}')">&times;</button>`;
-            container.appendChild(tag);
-        });
-    }
-}
-
-// Hàm xử lý khi xóa một tag
-function removeSelection(item, field) {
-    if (field === "price") {
-        selectedItems[field] = [];
-        const container = document.getElementById(`${field}-tags`);
-        updateTags(container, field);
-        hiddenButtonSubmit();
-        return;
-    }
-
-    selectedItems[field] = selectedItems[field].filter((i) => i !== item);
-    const container = document.getElementById(`${field}-tags`);
-    updateTags(container, field);
-    hiddenButtonSubmit();
-}
-
-// Ẩn dropdown khi nhấp ra ngoài
-window.addEventListener("click", (e) => {
-    // Kiểm tra xem người dùng có nhấn ngoài các dropdown không
-    if (!e.target.closest(".relative") && activeDropdown) {
-        activeDropdown.classList.add("hidden");
-        activeDropdown = null;
-    }
-});
-
-// Lấy các phần tử cần thiết
-const minPriceInput = document.getElementById("minPrice");
-const maxPriceInput = document.getElementById("maxPrice");
-const minRangeInput = document.getElementById("minRange");
-const maxRangeInput = document.getElementById("maxRange");
-const progress = document.getElementById("progress");
-
-// Cập nhật giá trị của input khi người dùng kéo thanh range
-minRangeInput.addEventListener("input", function () {
-    // Nếu min vượt quá max, điều chỉnh min bằng max - 100
-    if (parseInt(minRangeInput.value) >= parseInt(maxRangeInput.value)) {
-        minRangeInput.value = maxRangeInput.value - 100; // Khoảng cách tối thiểu là 100
-    }
-    minPriceInput.value = minRangeInput.value; // Cập nhật giá trị minPrice
-    updateSliderProgress(); // Cập nhật thanh tiến độ
-});
-
-maxRangeInput.addEventListener("input", function () {
-    // Nếu max nhỏ hơn min, điều chỉnh max bằng min + 100
-    if (parseInt(maxRangeInput.value) <= parseInt(minRangeInput.value)) {
-        maxRangeInput.value = parseInt(minRangeInput.value) + 100; // Khoảng cách tối thiểu là 100
-    }
-    maxPriceInput.value = maxRangeInput.value; // Cập nhật giá trị maxPrice
-    updateSliderProgress(); // Cập nhật thanh tiến độ
-});
-
-// Hàm cập nhật tiến độ của thanh range
-function updateSliderProgress() {
-    const min = parseInt(minRangeInput.value, 10);
-    const max = parseInt(maxRangeInput.value, 10);
-    const minPercentage = (min / maxRangeInput.max) * 100;
-    const maxPercentage = (max / maxRangeInput.max) * 100;
-
-    // Cập nhật thanh tiến độ
-    progress.style.left = `${minPercentage}%`;
-    progress.style.right = `${100 - maxPercentage}%`;
-}
-
-function showButtonSubmit() {
-    const submitButton = document.getElementById("SubmitFilterButton");
-    if (submitButton.classList.contains("hidden"))
-        submitButton.classList.remove("hidden");
-}
-
-function hiddenButtonSubmit() {
-    const submitButton = document.getElementById("SubmitFilterButton");
-    if (
-        !submitButton.classList.contains("hidden") &&
-        Object.values(selectedItems).every((item) => item.length === 0)
-    )
-        submitButton.classList.add("hidden");
-}
-
-function acceptPriceRange() {
-    const dropdown = document.getElementById("dropdown-price");
-    dropdown.classList.add("hidden");
-    const minPrice = document.getElementById("minPrice").value;
-    const maxPrice = document.getElementById("maxPrice").value;
-    selectedItems.price = [minPrice, maxPrice];
-    showButtonSubmit();
-    const selectedContainer = document.getElementById("price-tags");
-    updateTags(selectedContainer, "price");
-}
-
-function clearAllFilters() {
-    selectedItems.topic = [];
-    selectedItems.price = [];
-    selectedItems.level = [];
-    selectedItems.skill = [];
-    const selectedContainers = document.querySelectorAll(".selected-tags");
-    selectedContainers.forEach((container) => {
-        container.innerHTML = "";
     });
-    hiddenButtonSubmit();
-}
+    const sortSelect = document.getElementById("sort");
 
-function SubmitFilter() {
-    const url = new URL(window.location.href);
+    sortSelect.addEventListener("change", (event) => {
+        const selectedValue = event.target.value;
+        let sortField, sortOrder;
 
-    //deletel all search params except page, sort, order
-    const params = new URLSearchParams(url.search);
-    for (const key of params.keys()) {
-        if (key !== "page" && key !== "sort" && key !== "order") {
-            params.delete(key);
-        }
-    }
-
-    // Add the selected items to the URL
-    for (const field in selectedItems) {
-        if (selectedItems[field].length > 0) {
-            params.set(field, selectedItems[field].join(","));
-        }
-    }
-
-    clearAllFilters();
-    url.search = params.toString();
-    window.location.href = url.toString();
-}
-
-const searchInput = document.getElementById("search");
-searchInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-        const query = searchInput.value.trim();
-        if (query) {
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(url.search);
-            params.set("search", query);
-            url.search = params.toString();
-            window.location.href = url.toString();
-        }
-    }
-});
-
-function appliedSort(field, direction) {
-    if (field === "default") {
-        document.getElementById("dropdown-sort").classList.add("hidden");
-        return;
-    }
-    // Update the URL
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    params.set("sort", field);
-    params.set("order", direction);
-    url.search = params.toString();
-    window.location.href = url.toString();
-}
-
-function changeSortInfo(field, direction) {
-    // Update the sort info text based on the selected option
-    const sortInfo = document.getElementById("sort-info");
-
-    // Determine the text to display based on the field and direction
-    let sortText = "";
-    switch (field) {
-        case "Title":
+        switch (selectedValue) {
+            case "Title":
             sortText =
                 direction === "asc" ? "By Name ( A - Z )" : "By Name ( Z - A )";
             break;
@@ -282,21 +52,122 @@ function changeSortInfo(field, direction) {
                     ? "By Duration ( Short - Long )"
                     : "By Duration ( Long - Short )";
             break;
-    }
+        default:
+            sortText = "None";
+            break;
+        }
 
-    // Update the #sort-info element's text
-    sortInfo.textContent = sortText;
-}
-
-// chỉnh lại sort info khi trang được tải
-window.addEventListener("DOMContentLoaded", (event) => {
+        appliedSort(sortField, sortOrder);
+    });
+});
+function appliedSort(filter, order) {
+    console.log(filter, order);
     const url = new URL(window.location.href);
     const params = new URLSearchParams(url.search);
-    const sortField = params.get("sort");
-    const sortOrder = params.get("order");
+    params.set("sort", `${filter}_${order}`);
+    params.set("page", 1);
+    window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${params.toString()}`
+    );
+    fetchCoursesData(params);
+}
+function searchCourses() {
+    const searchInput = document.getElementById("search");
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    params.set("search", searchInput.value);
+    params.set("page", 1);
+    window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${params.toString()}`
+    );
+    fetchCoursesData(params);
+}
+function fetchCoursesData(params) {
+    const endpoint = `/courses/course-list-data/?${params.toString()}`;
+    console.log("Fetching data from:", endpoint); // Log URL endpoint
 
-    if (sortField && sortOrder) {
-        changeSortInfo(sortField, sortOrder);
-    } else {
+    fetch(endpoint, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    })
+        .then((response) => {
+            console.log("Response received:", response); // Log toàn bộ response
+            if (!response.ok) {
+                // Nếu không phải trạng thái HTTP 200
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            // Kiểm tra Content-Type để đảm bảo JSON
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Invalid content-type. Expected application/json.");
+            }
+
+            return response.json(); // Parse JSON nếu phản hồi hợp lệ
+        })
+        .then((data) => {
+            console.log("Data received:", data); // Log dữ liệu nhận được
+            if (!data.courses || data.courses.length === 0) {
+                console.log("No courses found.");
+                document.querySelector(".course-container tbody").innerHTML =
+                    `<tr><td colspan="8" class="text-center">No courses found</td></tr>`;
+                document.querySelector(".prev").classList.add("hidden");
+                document.querySelector(".next").classList.add("hidden");
+                updatePaging(0, 0, 0);
+                return;
+            }
+            updateCoursesContainer(data.courses, data.startItem, data.endItem, data.totalItem);
+        })
+        .catch((error) => console.error("Fetch error:", error)); // Bắt lỗi
+}
+
+
+function updateCoursesContainer(courses, startItem, endItem, totalItem) {
+    const coursesContainer = document.querySelector(".course-container tbody");
+    coursesContainer.innerHTML = ""; // Clear existing content
+
+    courses.forEach((course) => {
+        const row = document.createElement("tr");
+        row.classList.add("hover:bg-gray-100", "border-t");
+
+        row.innerHTML = `
+            <td class="py-3 px-4">${course.Title}</td>
+            <td class="py-3 px-4">${course.Duration} hours</td>
+            <td class="py-3 px-4">${course.Level}</td>
+            <td class="py-3 px-4">${course.Lecturer}</td>
+            <td class="py-3 px-4">${course.Price}</td>
+            <td class="py-3 px-4">${course.Rate}/5</td>
+            <td class="py-3 px-4">${course.Sale}%</td>
+            <td class="py-3 px-4">
+                <div class="flex space-x-2 border rounded">
+                    <a href="/courses/${course._id}" class="text-blue-600 hover:text-blue-800">
+                        👁️
+                    </a>
+                    <span class="text-gray-400 h-full">|</span>
+                    <button class="text-red-600 hover:text-red-800" onclick="deleteCourse('${course._id}')">
+                        🚫
+                    </button> 
+                </div>
+            </td>
+        `;
+
+        coursesContainer.appendChild(row);
+    });
+    updatePaging(startItem, endItem, totalItem);
+}
+function updatePaging(startItem, endItem, totalItem) {
+    const pagingContainer = document.querySelector(".paging");
+    const prev = document.querySelector(".prev");
+    const next = document.querySelector(".next");
+    if (prev.classList.contains("hidden") & (totalItem > 0)) {
+        prev.classList.remove("hidden");
     }
-});
+    if (next.classList.contains("hidden") & (totalItem > 0)) {
+        next.classList.remove("hidden");
+    }
+    pagingContainer.innerHTML = `Showing ${startItem}-${endItem} of ${totalItem}`;
+}
