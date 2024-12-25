@@ -90,10 +90,8 @@ function applyFilter() {
     closeFilter();
 }
 
-function generatePaymentRow(payments)
-{
-    if(payments.length === 0)
-    {
+function generatePaymentRow(payments) {
+    if (payments.length === 0) {
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = `
             <tr>
@@ -109,9 +107,13 @@ function generatePaymentRow(payments)
         .map((payment) => {
             index++;
             const date = new Date(payment.createdAt);
-            createdDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+            createdDate = `${date.getDate()}/${
+                date.getMonth() + 1
+            }/${date.getFullYear()}`;
             const textColor =
-                payment.status === "pending"? "text-red-500": "text-green-500";
+                payment.status === "pending"
+                    ? "text-red-500"
+                    : "text-green-500";
             const html = `
             <tr class="hover:bg-gray-100">
                 <td class="border border-gray-300 px-4 py-2">${index}</td>
@@ -127,11 +129,96 @@ function generatePaymentRow(payments)
 
                 <td class="border border-gray-300 px-4 py-2">${payment.userId.username}</td>
                 <td class="border border-gray-300 px-4 py-2">
-                    <a href="/order/details/${payment._id}" class="text-blue-500 hover:underline">Details</a>
+                    <a href="javascript:void(0)" class="text-blue-500 hover:underline" onclick="showDetails('${payment._id}')">Details</a>
                 </td>
             </tr>
         `;
             return html;
         })
         .join("");
+}
+
+function hideDetails() {
+    const detailPane = document.getElementById("detailPane");
+    const detailContent = document.getElementById("detailContent");
+    detailContent.innerHTML = "";
+    detailPane.classList.add("hidden");
+}
+
+function showDetails(orderId) {
+    const detailPane = document.getElementById("detailPane");
+    const detailContent = document.getElementById("detailContent");
+
+    // Load data dynamically (mocking fetch here for demonstration)
+    fetch(`orders/api/payments/${orderId}`)
+        .then((response) => response.json())
+        .then((data) => {
+            detailContent.innerHTML = `
+                <p><strong>ID:</strong> ${data._id}</p>
+                <p><strong>Date:</strong> ${formatDateTime(data.createdAt)}</p> 
+                <p><strong>Total:</strong> $${data.total}</p>
+                <p><strong>User:</strong> ${data.userId.username}</p>
+                <p><strong>Items:</strong></p>
+                <ul>
+                    ${data.items
+                        .map(
+                            (item) =>
+                                `<li>+ ${item.Title} - $${item.Price}</li>`
+                        )
+                        .join("")}
+                </ul>
+                <div class="flex flex-col mb-4">
+                    <label for="order-detail-status" class="text-lg font-bold mb-2">Status:</label>
+                    <select id="order-detail-status" name="status" class="border border-gray-300 rounded-lg p-2"
+                        onchange="updateStatus('${data._id}', this.value)">
+                        <option value="pending" ${
+                            data.status === "pending" ? "selected" : ""
+                        }>Pending</option>
+                        <option value="processing" ${
+                            data.status === "processing" ? "selected" : ""
+                        }>Processing</option>
+                        <option value="paid" ${
+                            data.status === "paid" ? "selected" : ""
+                        }>Paid</option>
+                    </select>
+                </div>
+            `;
+        })
+        .catch((error) => {
+            console.error("Error fetching order details:", error);
+            detailContent.innerHTML = "<p>Error loading details.</p>";
+        });
+    // Show the details pane
+    detailPane.classList.remove("hidden");
+    detailPane.classList.add("visible");
+}
+
+function updateStatus(orderId, status) {
+    fetch(`api/order/${orderId}/update`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            applyFilter();
+        })
+        .catch((error) => {
+            console.error("Error updating status:", error);
+        });
+}
+
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours24 = date.getHours();
+    const hours12 = hours24 % 12 || 12;
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+    const ampm = hours24 >= 12 ? "PM" : "AM";
+    return `${day}/${month}/${year} ${hours12}:${minutes}:${seconds} ${ampm}`;
 }

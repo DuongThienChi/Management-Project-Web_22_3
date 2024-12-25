@@ -20,6 +20,21 @@ const PaymentService = {
         const totalPages = Math.ceil(totalPayments / 10);
         return { payments, totalPages };
     },
+
+    getOrderDetail: async (id) => {
+        return await PaymentModel.findById(id)
+            .populate("userId", "username")
+            .populate({
+                path: 'items', // Tên trường tham chiếu
+                select: 'Title Price', // Chỉ lấy các trường name và price
+            });
+    },
+
+    updatePayment: async (id, data) => {
+        return await PaymentModel.findByIdAndUpdate(id, data, {
+            new: true,
+        });
+    }
 };
 
 module.exports = PaymentService;
