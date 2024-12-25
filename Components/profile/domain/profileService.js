@@ -1,6 +1,7 @@
 const User = require("../../auth/data-access/AdminModel");
 const bcrypt = require("bcrypt");
 const supabase = require("../../../config/supabase");
+const passport = require("../../auth/domain/passport");
 
 async function uploadImage(file, filePath) {
     try {
@@ -91,6 +92,7 @@ const profileService = {
                 updatedData,
                 { new: true }
             );
+            // req.user = updatedUser;
 
             if (!updatedUser) {
                 return res
