@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const CourseController = require("./coursesController");
 const { ensureAuthenticated } = require("../../../middlewares/authencation");
-const upload = require("../middlewares/multer");
+const upload = require("../../../middlewares/multer");
 
 router
     .get("/", CourseController.getCourses)

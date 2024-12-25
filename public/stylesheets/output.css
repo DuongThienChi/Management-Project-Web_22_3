@@ -684,6 +684,10 @@ video {
   left: 0px;
 }
 
+.left-2 {
+  left: 0.5rem;
+}
+
 .left-3 {
   left: 0.75rem;
 }
@@ -694,6 +698,10 @@ video {
 
 .right-0 {
   right: 0px;
+}
+
+.right-2 {
+  right: 0.5rem;
 }
 
 .right-4 {
@@ -784,6 +792,10 @@ video {
   margin: 1.75rem;
 }
 
+.m-8 {
+  margin: 2rem;
+}
+
 .mx-16 {
   margin-left: 4rem;
   margin-right: 4rem;
@@ -822,6 +834,10 @@ video {
 
 .ml-2 {
   margin-left: 0.5rem;
+}
+
+.ml-3 {
+  margin-left: 0.75rem;
 }
 
 .ml-64 {
@@ -1015,6 +1031,14 @@ video {
   height: 80%;
 }
 
+.h-40 {
+  height: 10rem;
+}
+
+.h-48 {
+  height: 12rem;
+}
+
 .h-5 {
   height: 1.25rem;
 }
@@ -1103,6 +1127,10 @@ video {
   max-width: 100%;
 }
 
+.max-w-md {
+  max-width: 28rem;
+}
+
 .max-w-sm {
   max-width: 24rem;
 }
@@ -1113,6 +1141,10 @@ video {
 
 .flex-shrink {
   flex-shrink: 1;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
 }
 
 .shrink {
@@ -1650,6 +1682,17 @@ video {
   gap: 1rem;
 }
 
+<<<<<<< HEAD
+=======
+.gap-5 {
+  gap: 1.25rem;
+}
+
+.gap-6 {
+  gap: 1.5rem;
+}
+
+>>>>>>> uploadImgUser
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(0.5rem * var(--tw-space-x-reverse));
@@ -2129,6 +2172,11 @@ video {
   background-color: rgb(79 117 255 / var(--tw-bg-opacity, 1));
 }
 
+.bg-\[\#F5F6FA\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 246 250 / var(--tw-bg-opacity, 1));
+}
+
 .bg-\[rgb\(255\2c 0\2c 0\)\] {
   --tw-bg-opacity: 1;
   background-color: rgb(255 0 0 / var(--tw-bg-opacity, 1));
@@ -2368,6 +2416,11 @@ video {
   padding-bottom: 1rem;
 }
 
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
 .pl-10 {
   padding-left: 2.5rem;
 }
@@ -2447,6 +2500,11 @@ video {
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
+}
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
 }
 
 .text-4xl {
@@ -2674,6 +2732,10 @@ video {
   -moz-osx-font-smoothing: auto;
 }
 
+.opacity-0 {
+  opacity: 0;
+}
+
 .bg-blend-normal {
   background-blend-mode: normal;
 }
@@ -2828,6 +2890,12 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-md {
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-sm {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
@@ -2942,6 +3010,22 @@ video {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.duration-500 {
+  transition-duration: 500ms;
 }
 
 .ease-in {
@@ -3166,6 +3250,18 @@ video {
   text-align: center;
 }
 
+<<<<<<< HEAD
+=======
+.disabled\:bg-gray-300:disabled {
+  --tw-bg-opacity: 1;
+  background-color: rgb(209 213 219 / var(--tw-bg-opacity, 1));
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+>>>>>>> uploadImgUser
 @media (min-width: 640px) {
   .sm\:underline {
     text-decoration-line: underline;

@@ -14,6 +14,7 @@ const hbs = require("hbs");
 const dotenv = require("dotenv");
 dotenv.config({ path: "config.env" });
 const orderRouter = require("./Components/order/api/pay");
+const reportRouter = require("./Components/report/api/report");
 
 db.connect();
 
@@ -27,8 +28,8 @@ hbs.registerPartials(path.join(__dirname, "views/partials"));
 //helpers
 require("./views/helpers/format");
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }, (limit = "10mb")));
 
 app.use(express.urlencoded({ extended: true }));
 const multer = require("multer");
@@ -83,4 +84,5 @@ app.use("/courses", coursesRouter);
 app.use("/users", userRouter);
 app.use("/profile", profileRouter);
 app.use("/orders", orderRouter);
+app.use("/report", reportRouter);
 module.exports = app;

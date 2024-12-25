@@ -30,3 +30,31 @@
 {{else}}
   <p>No data available</p>
 {{/if}}
+<div class="container mx-auto py-8 bg-[#F5F6FA]">
+  <h1 class="text-3xl font-bold mb-6 ml-3">Dashboard</h1>
+  <div class="bg-white border shadow rounded-lg p-6 m-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Revenue</h2>
+      <div class="flex gap-5">
+        <select id="filter-select" class="border border-gray-300 rounded-lg py-1 px-2">
+            <option value="daypicker">Day</option>
+            <option value="weekpicker">Week</option>
+            <option value="monthpicker">Month</option>
+        </select>
+      </select>
+      <div id="dynamic-input" class="border border-gray-300 rounded-lg py-1 px-2">
+          <!-- Dynamic input will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+    <canvas id="revenueChart" class="w-full h-40"></canvas>
+  </div>
+
+  <div class="bg-white border shadow rounded-lg p-6 m-8">
+      <h2 class="text-xl font-bold mb-4">Featured Product</h2>
+      <div id="productSlider" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6"></div>
+  </div>
+
+</div>
+
+    <script src="/javascripts/report.js"></script>
