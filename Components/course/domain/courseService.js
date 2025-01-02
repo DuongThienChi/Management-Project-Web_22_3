@@ -158,6 +158,16 @@ const CourseService = {
         }
         return newModule;
     },
+
+    updateCourse: async (courseId, courseData) => {
+        try{
+            const updatedCourse = await CourseModel.updateOne(courseId, courseData);
+            hightouch.syncDataByHighTouch();
+            return updatedCourse;
+        }catch(error){
+            throw error;
+        }
+    }
 };
 
 

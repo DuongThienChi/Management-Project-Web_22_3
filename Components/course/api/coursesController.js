@@ -84,8 +84,8 @@ const CourseController = {
         const { Title, Duration, Level, Description, Price, Sale, Rate, Lecturer } = req.body;
 
         try {
-            const updatedCourse = await Course.updateOne(
-                { _id: courseId },
+            const updatedCourse = await CourseService.updateCourse(
+                courseId,
                 {
                     Title,
                     Duration,
