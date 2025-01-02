@@ -92,12 +92,7 @@ const profileService = {
                 updatedData,
                 { new: true }
             );
-            req.session.passport.user = {
-                id: updatedUser._id,
-                username: updatedUser.username,
-                email: updatedUser.email,
-                Img: updatedUser.Img,
-            };
+            // req.user = updatedUser;
 
             if (!updatedUser) {
                 return res

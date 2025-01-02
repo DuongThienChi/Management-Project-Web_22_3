@@ -5,6 +5,7 @@ const SkillModel = require("../data-access/SkillModel");
 const TopicModel = require("../data-access/TopicModel");
 const supabase = require("../../../config/supabase");
 const mongoose = require("mongoose");
+const hightouch = require("../../../config/hightouch");
 
 async function uploadImage(file, filePath) {
     try {
@@ -110,23 +111,31 @@ const CourseService = {
 
     addNewCourse: async (course) => {
         try {
+            const images = course.Img;
+            course.Img = [];
             // get today
-            const date = new Date();
-            const sanitizedTitle = course.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            const filePath = `CourseImage/${date.getTime()}_${sanitizedTitle}`;
-            await uploadImage(course.Img, filePath);
-    
-            const { data } = supabase.storage
-                .from("SkillBoost")
-                .getPublicUrl(filePath);
-    
-            course.Img = data.publicUrl;
+            images.forEach(async (image) => {
+                const date = new Date();
+                const sanitizedTitle = course.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                const filePath = `CourseImage/${date.getTime()}_${sanitizedTitle}`;
+                await uploadImage(image, filePath);
+        
+                const { data } = supabase.storage
+                    .from("SkillBoost")
+                    .getPublicUrl(filePath);
+
+                // push image url to course.Img
+                course.Img.push(data.publicUrl);
+            });
             const skills = course.SkillGain.split(",");
             course.SkillGain = [];
             course.SkillGain = skills.map((skill) => new mongoose.Types.ObjectId(skill));
             course.Topic = new mongoose.Types.ObjectId(course.Topic);
-    
+
+
             const newCourse = await CourseModel.create(course);
+            hightouch.syncDataByHighTouch();
+
             return newCourse;
         } catch (error) {
             throw error;
@@ -150,5 +159,7 @@ const CourseService = {
         return newModule;
     },
 };
+
+
 
 module.exports = CourseService;

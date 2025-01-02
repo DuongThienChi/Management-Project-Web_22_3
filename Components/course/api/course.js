@@ -11,7 +11,7 @@ router
     .get("/:id", CourseController.GetCourseDetail)
     .post("/Add/newSkill", CourseController.AddNewSkill)
     .post("/Add/newTopic", CourseController.AddNewTopic)
-    .post("/Add/newCourse", upload.single("image"), CourseController.AddCourse)
+    .post("/Add/newCourse", upload.array("images", 10), CourseController.AddCourse)
     .post("/edit/update", CourseController.UpdateCourse);
 
 module.exports = router;

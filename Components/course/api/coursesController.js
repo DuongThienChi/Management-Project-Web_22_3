@@ -10,7 +10,6 @@ const CourseController = {
         try {
             const { search, sort, page, format } = req.query;  
             const CoursesData = await CourseService.getCourseListInfo(search, sort, page);
-            console.log("Retrieved Courses:", CoursesData.courses);
             res.render("pages/course", {
                 courses: CoursesData.courses,
                 currentPage: CoursesData.currentPage,
@@ -173,8 +172,8 @@ const CourseController = {
             } = req.body;
 
             const Modules = JSON.parse(modules);
-            // Lấy file ảnh từ request
-            const file = req.file;
+
+            const files = req.files;
 
             const result = await CourseService.addNewCourse({
                 Title: title,
@@ -185,7 +184,7 @@ const CourseController = {
                 Topic: topic,
                 SkillGain: skillGain,
                 Lecturer: lecturer,
-                Img: file,
+                Img: files,
             });
 
             if (Modules && Modules.length > 0) {
