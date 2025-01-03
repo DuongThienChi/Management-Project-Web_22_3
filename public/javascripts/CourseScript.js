@@ -33,32 +33,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     sortSelect.addEventListener("change", (event) => {
         const selectedValue = event.target.value;
-        let sortField, sortOrder;
-
+        let sortField = "";
+        let sortOrder = "";
+    
         switch (selectedValue) {
-            case "Title":
-            sortText =
-                direction === "asc" ? "By Name ( A - Z )" : "By Name ( Z - A )";
-            break;
-        case "Price":
-            sortText =
-                direction === "asc"
-                    ? "By Price ( Low - High )"
-                    : "By Price ( High - Low )";
-            break;
-        case "Duration":
-            sortText =
-                direction === "asc"
-                    ? "By Duration ( Short - Long )"
-                    : "By Duration ( Long - Short )";
-            break;
-        default:
-            sortText = "None";
-            break;
+            case "Title_asc":
+                sortField = "Title";
+                sortOrder = "asc";
+                break;
+            case "Title_desc":
+                sortField = "Title";
+                sortOrder = "desc";
+                break;
+            case "Price_asc":
+                sortField = "Price";
+                sortOrder = "asc";
+                break;
+            case "Price_desc":
+                sortField = "Price";
+                sortOrder = "desc";
+                break;
+            case "Duration_asc":
+                sortField = "Duration";
+                sortOrder = "asc";
+                break;
+            case "Duration_desc":
+                sortField = "Duration";
+                sortOrder = "desc";
+                break;
+            default:
+                sortField = "";
+                sortOrder = "";
+                break;
         }
-
+    
         appliedSort(sortField, sortOrder);
     });
+
 });
 function appliedSort(filter, order) {
     console.log(filter, order);
@@ -147,10 +158,7 @@ function updateCoursesContainer(courses, startItem, endItem, totalItem) {
                     <a href="/courses/${course._id}" class="text-blue-600 hover:text-blue-800">
                         👁️
                     </a>
-                    <span class="text-gray-400 h-full">|</span>
-                    <button class="text-red-600 hover:text-red-800" onclick="deleteCourse('${course._id}')">
-                        🚫
-                    </button> 
+                   
                 </div>
             </td>
         `;

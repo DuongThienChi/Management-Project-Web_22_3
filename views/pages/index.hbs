@@ -1,37 +1,40 @@
-<h1>{{title}}</h1>
 
-{{#if error}}
-  <div style="color: red;">{{error}}</div>
-{{else}}
-  <h2>Data Loaded Successfully</h2>
-{{/if}}
-
-{{#if analyticsData.length}}
-  <table border="1">
-    <tr>
-      <th>Page Title</th>
-      <th>Screen Resolution</th>
-      <th>Country</th>
-      <th>New Users</th>
-      <th>Sessions</th>
-      <th>Screen Page Views</th> <!-- Cập nhật tên trường -->
-    </tr>
-    {{#each analyticsData}}
-      <tr>
-        <td>{{this.pageTitle}}</td>
-        <td>{{this.screenResolution}}</td>
-        <td>{{this.country}}</td>
-        <td>{{this.newUsers}}</td>
-        <td>{{this.sessions}}</td>
-        <td>{{this.screenPageViews}}</td> <!-- Cập nhật tên trường -->
-      </tr>
-    {{/each}}
-  </table>
-{{else}}
-  <p>No data available</p>
-{{/if}}
 <div class="container mx-auto py-8 bg-[#F5F6FA]">
-  <h1 class="text-3xl font-bold mb-6 ml-3">Dashboard</h1>
+  <div class="grid grid-cols-3 gap-6 m-8">
+  <!-- Card: Total Users -->
+  <div class="bg-white border shadow rounded-lg flex items-center p-4">
+    <div class=" text-blue-500 rounded-full p-3 mr-4">
+      <i class="fas fa-users text-xl"></i>
+    </div>
+    <div>
+      <h3 class="text-gray-600 text-sm">Users</h3>
+      <p class="text-lg font-semibold text-gray-900">{{totalNewUsers}}</p>
+    </div>
+  </div>
+
+  <!-- Card: Page Views -->
+  <div class="bg-white border shadow rounded-lg flex items-center p-4">
+    <div class="text-blue-500 rounded-full p-3 mr-4">
+      <i class="fas fa-file-alt text-xl"></i>
+    </div>
+    <div>
+      <h3 class="text-gray-600 text-sm">Most Visited Country</h3>
+      <p class="text-lg font-semibold text-gray-900">{{mostVisitedCountry}}</p>
+    </div>
+  </div>
+
+  <!-- Card: Total Sessions -->
+  <div class="bg-white border shadow rounded-lg flex items-center p-4">
+    <div class="text-blue-500  rounded-full p-3 mr-4">
+      <i class="fas fa-chart-line text-xl"></i>
+    </div>
+    <div>
+      <h3 class="text-gray-600 text-sm">Sessions</h3>
+      <p class="text-lg font-semibold text-gray-900">{{totalSessions}}</p>
+    </div>
+  </div>
+</div>
+
   <div class="bg-white border shadow rounded-lg p-6 m-8">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold">Revenue</h2>

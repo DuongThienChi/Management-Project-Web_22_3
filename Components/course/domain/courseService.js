@@ -128,7 +128,6 @@ const CourseService = {
                 course.Img.push(data.publicUrl);
             });
             const skills = course.SkillGain.split(",");
-            course.SkillGain = [];
             course.SkillGain = skills.map((skill) => new mongoose.Types.ObjectId(skill));
             course.Topic = new mongoose.Types.ObjectId(course.Topic);
 
@@ -138,6 +137,7 @@ const CourseService = {
 
             return newCourse;
         } catch (error) {
+            console.error("Error during course creation:", error);
             throw error;
         }
     },
@@ -158,6 +158,82 @@ const CourseService = {
         }
         return newModule;
     },
+    updateCourseProfile: async (req, res) => {
+        try {
+            // Retrieve courseId from session
+            const courseId = req.session.courseId;
+            if (!courseId) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Course ID is required",
+                });
+            }
+    
+            // Extract fields from the request body
+            const { Title, Duration, Level, Description, Price, Sale, Rate, Lecturer } = req.body;
+            const Img = req.file;
+    
+            // Prepare the updated data object
+            const updatedData = {
+                ...(Title && { Title }),
+                ...(Duration && { Duration }),
+                ...(Level && { Level }),
+                ...(Description && { Description }),
+                ...(Price && { Price }),
+                ...(Sale && { Sale }),
+                ...(Rate && { Rate }),
+                ...(Lecturer && { Lecturer }),
+            };
+    
+            // If an image file is provided, upload it to Supabase
+            if (Img) {
+                const date = new Date();
+                const sanitizedTitle = Title?.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+                const filePath = `CourseImage/${date.getTime()}_${sanitizedTitle}`;
+                await uploadImage(Img, filePath);
+    
+                const { data } = supabase.storage
+                    .from("SkillBoost")
+                    .getPublicUrl(filePath);
+                    
+    
+                if (!data.publicUrl) {
+                    return res.status(500).json({
+                        success: false,
+                        message: "Failed to upload image",
+                    });
+                }
+    
+                updatedData.Img = data.publicUrl;
+            }
+    
+            // Update the course document in the database
+            const updatedCourse = await CourseModel.updateOne(
+                { _id: courseId },
+                updatedData
+            );
+    
+            if (updatedCourse.modifiedCount === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "No changes were made to the course",
+                });
+            }
+    
+            // Send success response
+            return res.json({
+                success: true,
+                message: "Course updated successfully!",
+            });
+        } catch (error) {
+            console.error("Error updating course:", error);
+            return res.status(500).json({
+                success: false,
+                message: "An error occurred while updating the course",
+            });
+        }
+    },
+    
 };
 
 

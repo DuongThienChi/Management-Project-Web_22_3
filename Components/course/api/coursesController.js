@@ -72,51 +72,6 @@ const CourseController = {
         }
     },
 
-    UpdateCourse: async (req, res) => {
-        const courseId = req.session.courseId;
-
-        if (!courseId) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Course ID is required" });
-        }
-
-        const { Title, Duration, Level, Description, Price, Sale, Rate, Lecturer } = req.body;
-
-        try {
-            const updatedCourse = await Course.updateOne(
-                { _id: courseId },
-                {
-                    Title,
-                    Duration,
-                    Level,
-                    Description,
-                    Price,
-                    Sale,
-                    Rate,
-                    Lecturer 
-                }
-            );
-
-            if (updatedCourse.modifiedCount === 0) {
-                return res
-                    .status(400)
-                    .json({ success: false, message: "No course was updated" });
-            }
-
-            res.json({
-                success: true,
-                message: "Course updated successfully!",
-            });
-        } catch (error) {
-            console.error("Error updating course:", error);
-            res.status(500).json({
-                success: false,
-                message: "An error occurred while updating the course",
-            });
-        }
-    },
-
     ShowAddCoursePage: async (req, res) => {
         const { topics, skills } = await CourseService.getTopicAndSkill();
         res.render("pages/AddCoursePage", {
@@ -199,6 +154,22 @@ const CourseController = {
                 success: false,
                 message: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR),
             });
+        }
+    },
+    UpdateCourse: async (req, res) => {
+        try {
+            if (req.file) {
+                console.log("File:", req.file);
+            } else {
+                console.log("No file uploaded");
+            }
+            await CourseService.updateCourseProfile(req, res);
+            res.status(200).json({
+                success: true,
+                message: "Profile updated successfully",
+            });
+        } catch (error) {
+            console.error(error);
         }
     },
 };
