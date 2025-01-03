@@ -6,19 +6,26 @@ const upload = require("../../../middlewares/multer");
 
 router
     .get("/", CourseController.getCourses)
-    
-    
-    .get("/course-list-data", ensureAuthenticated, CourseController.GetCourseListData)
+
+    .get(
+        "/course-list-data",
+        ensureAuthenticated,
+        CourseController.GetCourseListData
+    )
     .get("/Add", CourseController.ShowAddCoursePage)
     .get("/:id", CourseController.GetCourseDetail)
     .post("/Add/newSkill", CourseController.AddNewSkill)
     .post("/Add/newTopic", CourseController.AddNewTopic)
-    .post("/Add/newCourse", upload.array("images", 10), CourseController.AddCourse)
+    .post(
+        "/Add/newCourse",
+        upload.array("images", 10),
+        CourseController.AddCourse
+    )
     .post(
         "/edit/update",
         ensureAuthenticated,
-        upload.single("Image"),
+        upload.array("images", 10),
         CourseController.UpdateCourse
-    )
+    );
 
 module.exports = router;
