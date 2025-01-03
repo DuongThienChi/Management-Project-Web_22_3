@@ -3,70 +3,81 @@ const { google } = require("googleapis");
 const HomeController = {
   GetHomePage: async (req, res) => {
     try {
-      // Đọc thông tin tài khoản dịch vụ
       const key = require("../../../gganalytics.json");
 
-      // Tạo GoogleAuth với tài khoản dịch vụ
       const auth = new google.auth.GoogleAuth({
         credentials: key,
         scopes: ["https://www.googleapis.com/auth/analytics.readonly"],
       });
 
-      // Ủy quyền (get client)
       const authClient = await auth.getClient();
 
-      // Khởi tạo Google Analytics Data API (GA4)
       const analyticsData = google.analyticsdata("v1beta");
 
-      // Gửi yêu cầu lấy dữ liệu từ GA4
       const response = await analyticsData.properties.runReport({
         auth: authClient,
-        property: "properties/469695432", // Thay bằng Property ID GA4 của bạn
+        property: "properties/469695432",
         requestBody: {
           dateRanges: [
             {
-              startDate: "30daysAgo",  // Khoảng thời gian từ 30 ngày trước
-              endDate: "today",        // Đến hôm nay
+              startDate: "30daysAgo",
+              endDate: "today",
             },
           ],
           dimensions: [
-            { name: "pageTitle" },        // Tiêu đề trang
-            { name: "screenResolution" }, // Loại màn hình
-            { name: "country" },          // Quốc gia
+            { name: "pageTitle" },
+            { name: "screenResolution" },
+            { name: "country" },
           ],
           metrics: [
-            { name: "newUsers" },         // Người dùng mới
-            { name: "sessions" },         // Số phiên truy cập
-            { name: "screenPageViews" },  // Số lần xem trang (thay thế pageviews)
+            { name: "newUsers" },
+            { name: "sessions" },
+            { name: "screenPageViews" },
           ],
         },
       });
 
-      // Chuyển đổi dữ liệu thành dạng dễ sử dụng
       const analyticsRows = response.data.rows.map(row => ({
         pageTitle: row.dimensionValues[0].value,
         screenResolution: row.dimensionValues[1].value,
         country: row.dimensionValues[2].value,
-        newUsers: row.metricValues[0].value,
-        sessions: row.metricValues[1].value,
-        screenPageViews: row.metricValues[2].value, // Đổi tên cho trường này
+        newUsers: parseInt(row.metricValues[0].value, 10),
+        sessions: parseInt(row.metricValues[1].value, 10),
+        screenPageViews: parseInt(row.metricValues[2].value, 10),
       }));
 
-      // Truyền dữ liệu vào template
+      const totalNewUsers = analyticsRows.reduce((sum, row) => sum + row.newUsers, 0);
+      const totalSessions = analyticsRows.reduce((sum, row) => sum + row.sessions, 0);
+
+      const countrySessions = analyticsRows.reduce((result, row) => {
+        result[row.country] = (result[row.country] || 0) + row.sessions;
+        return result;
+      }, {});
+
+      const mostVisitedCountry = Object.keys(countrySessions).reduce((maxCountry, country) =>
+        countrySessions[country] > countrySessions[maxCountry] ? country : maxCountry,
+        Object.keys(countrySessions)[0]
+      );
+
       res.render("pages/index", {
-        title: "Google Analytics Data",
+        title: "Google Analytics Summary",
         showSidebar: true,
         showTopbar: true,
-        analyticsData: analyticsRows, // Truyền dữ liệu đã chuyển đổi
+        totalNewUsers,
+        mostVisitedCountry,
+        totalSessions,
+        analyticsData: analyticsRows,
       });
     } catch (error) {
       console.error("Error fetching data from Google Analytics:", error);
 
-      // Trả về trang với thông báo lỗi
       res.render("pages/index", {
         title: "Google Analytics Data",
         showSidebar: true,
         showTopbar: true,
+        totalNewUsers: 0,
+        mostVisitedCountry: "N/A",
+        totalSessions: 0,
         analyticsData: [],
         error: "Failed to fetch data from Google Analytics",
       });
