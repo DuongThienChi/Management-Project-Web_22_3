@@ -5,6 +5,7 @@ const SkillModel = require("../data-access/SkillModel");
 const TopicModel = require("../data-access/TopicModel");
 const supabase = require("../../../config/supabase");
 const mongoose = require("mongoose");
+const hightouch = require("../../../config/hightouch");
 
 async function uploadImage(file, filePath) {
     try {
@@ -110,33 +111,30 @@ const CourseService = {
 
     addNewCourse: async (course) => {
         try {
-            const date = new Date();
-            const sanitizedTitle = course.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            const filePath = `CourseImage/${date.getTime()}_${sanitizedTitle}`;
-            
-            // Kiểm tra file và log
-            console.log("Uploading image to Supabase...");
-            await uploadImage(course.Img, filePath);
-    
-            const { data } = supabase.storage
-                .from("SkillBoost")
-                .getPublicUrl(filePath);
-                console.log("Image URL:", data.publicUrl);
-    
-            if (!data || !data.publicUrl) {
-                console.error("No URL returned for the image.");
-                return res.status(500).json({
-                    success: false,
-                    message: "Failed to upload image"
-                });
-            }
-    
-            course.Img = data.publicUrl;
+            const images = course.Img;
+            course.Img = [];
+            // get today
+            images.forEach(async (image) => {
+                const date = new Date();
+                const sanitizedTitle = course.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                const filePath = `CourseImage/${date.getTime()}_${sanitizedTitle}`;
+                await uploadImage(image, filePath);
+        
+                const { data } = supabase.storage
+                    .from("SkillBoost")
+                    .getPublicUrl(filePath);
+
+                // push image url to course.Img
+                course.Img.push(data.publicUrl);
+            });
             const skills = course.SkillGain.split(",");
             course.SkillGain = skills.map((skill) => new mongoose.Types.ObjectId(skill));
             course.Topic = new mongoose.Types.ObjectId(course.Topic);
-    
+
+
             const newCourse = await CourseModel.create(course);
+            hightouch.syncDataByHighTouch();
+
             return newCourse;
         } catch (error) {
             console.error("Error during course creation:", error);
@@ -237,5 +235,7 @@ const CourseService = {
     },
     
 };
+
+
 
 module.exports = CourseService;

@@ -351,8 +351,8 @@ function addCourse() {
     const price = document.getElementById("price").value.trim();
     const topic = document.getElementById("topic").value.trim();
     const skillGainDialog = document.getElementById("skillGainDialog");
-    const img = document.getElementById("image");
-    const file = img.files[0];
+    const img = document.getElementById("images");
+    const file = img.files;
     // get id of the selected skills
     const skillGain = Array.from(
         skillGainDialog.querySelectorAll('input[name="SkillGain"]:checked')
@@ -377,6 +377,11 @@ function addCourse() {
         );
         return;
     }
+    
+    if(file.length > 10){
+        alert("You can only upload 10 images at a time!");
+        return;
+    }
 
     const formData = new FormData();
     formData.append("title", title);
@@ -388,7 +393,10 @@ function addCourse() {
     formData.append("skillGain", skillGain);
     formData.append("lecturer", lecturer);
     formData.append("modules", JSON.stringify(modules));
-    formData.append("image", file);
+    // append multiple images
+    for (let i = 0; i < file.length; i++) {
+        formData.append("images", file[i]);
+    }
 
     xhr = new XMLHttpRequest();
     xhr.open("POST", "/courses/Add/newCourse", true);
@@ -404,4 +412,7 @@ function addCourse() {
         }
     };
     xhr.send(formData);
+
 }
+
+
