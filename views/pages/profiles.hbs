@@ -105,14 +105,14 @@ document.getElementById('profileForm').addEventListener('submit', function(event
   .then(response => response.json())
   .then(data => {
     if (data.success) {
-      alert("Update success: " + JSON.stringify(data)); 
-      window.location.href = '/home';
+      //alert("Update success: " + JSON.stringify(data)); 
+      window.location.href = '/profile';
     } else {
-      alert("Update failed: " + JSON.stringify(data)); 
+      //alert("Update failed: " + JSON.stringify(data)); 
     }
   })
   .catch(error => {
-     alert('Error occurred: ' + error.message);  
+     console.log('Error occurred: ' + error.message);  
   });
 });
 const togglePassword = document.getElementById('togglePassword');
