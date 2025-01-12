@@ -201,6 +201,22 @@ const CourseController = {
             });
         }
     },
+    UpdateCourse: async (req, res) => {
+        try {
+            if (req.file) {
+                console.log("File:", req.file);
+            } else {
+                console.log("No file uploaded");
+            }
+            await CourseService.updateCourseProfile(req, res);
+            res.status(200).json({
+                success: true,
+                message: "Profile updated successfully",
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    },
 };
 
 module.exports = CourseController;

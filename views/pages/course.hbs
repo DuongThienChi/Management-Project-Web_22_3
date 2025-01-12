@@ -20,12 +20,12 @@
                     <select 
                         id="sort"
                         class="border border-gray-300 rounded-md py-2 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="title_asc">Sort by Title (A-Z)</option>
-                        <option value="title_desc">Sort by Title (Z-A)</option>
-                        <option value="price_asc">Sort by Price (Low to High)</option>
-                        <option value="price_desc">Sort by Price (High to Low)</option>
-                        <option value="duration_asc">Sort by Duration (Shortest)</option>
-                        <option value="duration_desc">Sort by Duration (Longest)</option>
+                        <option value="Title_asc">Sort by Title (A-Z)</option>
+                        <option value="Title_desc">Sort by Title (Z-A)</option>
+                        <option value="Price_asc">Sort by Price (Low to High)</option>
+                        <option value="Price_desc">Sort by Price (High to Low)</option>
+                        <option value="Duration_asc">Sort by Duration (Shortest)</option>
+                        <option value="Duration_desc">Sort by Duration (Longest)</option>
                     </select>
                 </div>
             </div>
@@ -55,15 +55,10 @@
                         <td class="py-3 px-4">{{this.Rate}}/5</td>
                         <td class="py-3 px-4">{{this.Sale}}%</td>
                         <td class="py-3 px-4">
-                            <div class="flex space-x-2 border rounded">
-                                <a href="/courses/{{this._id}}" class="text-blue-600 hover:text-blue-800">
+                            <a href="/courses/{{this._id}}" class="text-blue-600 hover:text-blue-800">
                                     👁️
                                 </a>
-                                <span class="text-gray-400 h-full">|</span>
-                                <button class="text-red-600 hover:text-red-800" onclick="deleteCourse('{{this._id}}')">
-                                    🚫
-                                </button> 
-                            </div>
+                           
                         </td>
                     </tr>
                     {{/each}}
