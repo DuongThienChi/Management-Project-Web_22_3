@@ -5,7 +5,7 @@
       <div class="flex items-center justify-center mb-6">
         <div class="relative inline-block group">
           <label for="Image" class="cursor-pointer">
-            <img src="{{getThumbnail Course.Img}}" alt="Upload Image" class="rounded-full w-20 h-20 object-cover border border-gray-300">
+            <img src="{{Course.Img}}" alt="Upload Image" class="rounded-full w-20 h-20 object-cover border border-gray-300">
             <!-- Icon overlay -->
             <div class="absolute rounded-full w-20 h-20 inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <!-- Font Awesome Edit Icon -->
@@ -137,45 +137,36 @@
     if (!valid) {
       return; // Stop form submission if validation failed
     }
-
-    // Process form data if all fields are valid
-   const formData = new FormData();
     const path = window.location.pathname;
     const pathSegments = path.split('/');
     const courseId = pathSegments.length > 2 ? pathSegments[2] : null;
+    const formData = new FormData(this);
 
-    formData.append('CourseID', courseId);
-    formData.append('Title', document.getElementById('title').value);
-    formData.append('Duration', document.getElementById('duration').value);
-    formData.append('Level', document.getElementById('level').value);
-    formData.append('Description', document.getElementById('description').value);
-    formData.append('Price', document.getElementById('price').value);
-    formData.append('Sale', document.getElementById('sale').value);
-    formData.append('Rate', document.getElementById('rating').value);
-    formData.append('Lecturer', document.getElementById('lecturer').value);
+      const formObject = {};
+      formData.forEach((value, key) => {
+        formObject[key] = value;
+      });
+      console.log("Form Data:", formObject);
+try {
+    const response = await fetch('/courses/edit/update', {
+        method: 'POST',
+        body: formData,
+    });
 
-    // Append the image file, if selected
-    const imageFile = document.getElementById('Image').files[0];
-    if (imageFile) {
-        formData.append('Image', imageFile);
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
     }
 
-    try {
-        const response = await fetch('/courses/edit/update', {
-            method: 'POST',
-            body: formData,
-        });
+    const result = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
-            window.location.href = '/courses';
-        } else {
-            console.error(result.message);
-        }
-    } catch (error) {
-      console.error('Error:', error);
+    if (result.success) {
+        window.location.href = '/courses';
+    } else {
+        console.error('Update failed:', result.message);
     }
+} catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+}
   });
 });
 
