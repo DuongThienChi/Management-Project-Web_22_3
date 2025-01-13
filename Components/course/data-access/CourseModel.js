@@ -25,8 +25,8 @@ const CoursesSchema = new mongoose.Schema({
         required: false,
     },
     Img: {
-        default: "https://via.placeholder.com/150",
-        type: String,
+        default: ["https://via.placeholder.com/150"],
+        type: array,
         required: true,
     },
     Price: {
