@@ -112,9 +112,9 @@ const CourseService = {
     addNewCourse: async (course) => {
         try {
             const images = course.Img;
-            course.Img = [];
+            let Images = [];
             // get today
-            images.forEach(async (image) => {
+            const imageProcessingTasks = images.map(async (image) => {
                 const date = new Date();
                 const sanitizedTitle = course.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
                 const filePath = `CourseImage/${date.getTime()}_${sanitizedTitle}`;
@@ -124,13 +124,13 @@ const CourseService = {
                     .from("SkillBoost")
                     .getPublicUrl(filePath);
 
-                // push image url to course.Img
-                course.Img.push(data.publicUrl);
+                return data.publicUrl;
             });
+            Images = await Promise.all(imageProcessingTasks);
             const skills = course.SkillGain.split(",");
             course.SkillGain = skills.map((skill) => new mongoose.Types.ObjectId(skill));
             course.Topic = new mongoose.Types.ObjectId(course.Topic);
-
+            course.Img = Images;
 
             const newCourse = await CourseModel.create(course);
             hightouch.syncDataByHighTouch();
