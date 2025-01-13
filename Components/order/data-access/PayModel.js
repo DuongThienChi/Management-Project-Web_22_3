@@ -42,7 +42,7 @@ paymentSchema.statics.fetchPayments = async function (
     endDate,
     status
 ) {
-    const limit = 15;
+    const limit = 10;
     const skip = (page - 1) * limit;
     let query = {};
 

@@ -4,7 +4,7 @@ const paymentController = {
     getPayments: async (req, res) => {
         try {
             const {page, sort, order, startDate, endDate, status} = req.query; 
-            const { payments, totalPages } = await PaymentService.getPayments(page, sort, order, startDate, endDate, status);
+            const { payments, totalPayments, startIndex, endIndex } = await PaymentService.getPayments(page, sort, order, startDate, endDate, status);
             if (!payments) {
                 return res.status(404).json({ message: "No payments found" });
             }
@@ -14,7 +14,9 @@ const paymentController = {
                 orders: payments, 
                 showSidebar: true, 
                 showTopbar: true,
-                totalPages,
+                totalPayments,
+                startIndex,
+                endIndex,
              });
         } catch (error) {
             res.status(500).json({ message: error.message });
@@ -24,12 +26,12 @@ const paymentController = {
     getListPayments: async (req, res) => {
         try {
             const {page, sort, order, startDate, endDate, status} = req.query; 
-            const { payments, totalPages } = await PaymentService.getPayments(page, sort, order, startDate, endDate, status);
+            const { payments, totalPayments, startIndex, endIndex } = await PaymentService.getPayments(page, sort, order, startDate, endDate, status);
             if (!payments) {
                 return res.status(404).json({ message: "No payments found" });
             }
             
-            res.json({payments, totalPages});
+            res.json({payments, totalPayments, startIndex, endIndex});
         } catch (error) {
             res.status(500).json({ message: error.message });
         }

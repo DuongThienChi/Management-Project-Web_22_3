@@ -2,6 +2,11 @@ let currentSort = {
     field: null,
     direction: 1,
 };
+let pagging = {
+    totalPayments: 0,
+    startIndex: 0,
+    endIndex: 0,
+};
 
 function applySort(field) {
     if (currentSort.field === field) {
@@ -136,6 +141,9 @@ function generatePaymentRow(payments) {
             return html;
         })
         .join("");
+    
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = `Showing ${pagging.startIndex}-${pagging.endIndex} of ${pagging.totalPayments}`
 }
 
 function hideDetails() {
@@ -221,4 +229,39 @@ function formatDateTime(dateString) {
     const seconds = String(date.getSeconds()).padStart(2, "0");
     const ampm = hours24 >= 12 ? "PM" : "AM";
     return `${day}/${month}/${year} ${hours12}:${minutes}:${seconds} ${ampm}`;
+}
+
+function changePage(page) {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    let currentPage = parseInt(params.get("page")) || 1;
+
+    if (page === "prev") {
+        currentPage -= 1;
+    } else if (page === "next") {
+        currentPage += 1;
+    }
+
+    currentPage = Math.max(currentPage, 1);
+    params.set("page", currentPage);
+    window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${params.toString()}`
+    );
+
+    // Fetch new data based on updated page number
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `/orders/api/payments?${params.toString()}`);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const { payments, totalPayments, startIndex, endIndex } = JSON.parse(xhr.responseText);
+            pagging.totalPayments = totalPayments;
+            pagging.startIndex = startIndex;
+            pagging.endIndex = endIndex;
+            generatePaymentRow(payments);
+        }
+    };
+
+    xhr.send();
 }

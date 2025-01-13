@@ -17,8 +17,10 @@ const PaymentService = {
         );
 
         const totalPayments = await PaymentModel.find().countDocuments();
-        const totalPages = Math.ceil(totalPayments / 10);
-        return { payments, totalPages };
+        const totalPages = Math.ceil(totalPayments/10);
+        const startIndex = (page - 1) * 10 + 1;
+        const endIndex = Math.min(page * 10, totalPayments);
+        return { payments, totalPayments, startIndex, endIndex };
     },
 
     getOrderDetail: async (id) => {

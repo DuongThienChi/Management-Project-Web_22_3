@@ -70,6 +70,20 @@
             </tbody>
         </table>
     </div>
+    <div class="flex items-center justify-between mt-4 text-gray-600 text-sm">
+        <div class="paging" id="pagination">
+            Showing {{startIndex}}-{{endIndex}} of {{totalPayments}}
+        </div>
+        <div class="flex space-x-2">
+            <button class="border rounded-md border-gray-300 px-3 py-1 hover:bg-gray-100 transition prev" onclick="changePage('prev')">
+                &lt;
+            </button>
+            <button class="border rounded-md border-gray-300 px-3 py-1 hover:bg-gray-100 transition next" onclick="changePage('next')">
+                &gt;
+            </button>
+        </div>
+    </div>
+
 </div>
 
 <div id="detailPane" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 hidden">
