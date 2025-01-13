@@ -24,7 +24,7 @@ router
     .post(
         "/edit/update",
         ensureAuthenticated,
-        upload.array("images", 10),
+         upload.single('Image'),
         CourseController.UpdateCourse
     );
 
