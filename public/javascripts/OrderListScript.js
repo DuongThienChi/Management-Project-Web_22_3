@@ -8,6 +8,19 @@ let pagging = {
     endIndex: 0,
 };
 
+// Lấy nội dung từ phần tử
+const paginationText = document.querySelector("#pagination").textContent.trim();
+
+// Sử dụng RegEx để trích xuất số
+const matches = paginationText.match(/(\d+)/g);
+
+if (matches) {
+    // Gán giá trị vào biến `pagging`
+    pagging.startIndex = parseInt(matches[0], 10); // Số đầu tiên
+    pagging.endIndex = parseInt(matches[1], 10);   // Số thứ hai
+    pagging.totalPayments = parseInt(matches[2], 10); // Số thứ ba
+}
+
 function applySort(field) {
     if (currentSort.field === field) {
         currentSort.direction = currentSort.direction === 1 ? -1 : 1;
@@ -91,7 +104,6 @@ function applyFilter() {
     };
 
     xhr.send();
-
     closeFilter();
 }
 
@@ -202,7 +214,7 @@ function showDetails(orderId) {
 }
 
 function updateStatus(orderId, status) {
-    fetch(`api/order/${orderId}/update`, {
+    fetch(`orders/api/order/${orderId}/update`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
