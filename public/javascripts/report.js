@@ -177,7 +177,7 @@ filterSelect.addEventListener("change", updateSelectedOptions);
 updateSelectedOptions();
 function renderFeatureProduct(products) {
     const productSlider = document.getElementById("productSlider");
-
+    console.log(products);
     if (products.length > 0) {
         productSlider.innerHTML = `
         <div class="relative overflow-hidden">
