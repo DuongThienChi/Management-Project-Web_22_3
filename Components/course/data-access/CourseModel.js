@@ -26,7 +26,7 @@ const CoursesSchema = new mongoose.Schema({
     },
     Img: {
         default: ["https://via.placeholder.com/150"],
-        type: array,
+        type: Array,
         required: true,
     },
     Price: {
@@ -88,14 +88,14 @@ CoursesSchema.statics.GetAllRelevantCourses = async function (CourseId) {
     const CurrentCourse = await this.findById(CourseId);
     // Lấy các khóa học theo Topic
     const RelevantCoursesByTopic = await this.model("Courses").find({
-        Topic: CurrentCourse.Topic,  // Sử dụng `this.Topic` để lấy Topic của khóa học hiện tại
-        _id: { $ne: CurrentCourse._id },  // Đảm bảo không lấy chính khóa học này
+        Topic: CurrentCourse.Topic, // Sử dụng `this.Topic` để lấy Topic của khóa học hiện tại
+        _id: { $ne: CurrentCourse._id }, // Đảm bảo không lấy chính khóa học này
     });
 
     // Lấy các khóa học theo SkillGain
     const RelevantCoursesBySkill = await this.model("Courses").find({
-        SkillGain: { $in: CurrentCourse.SkillGain },  // Sử dụng `this.SkillGain` để lấy SkillGain của khóa học hiện tại
-        _id: { $ne: CurrentCourse._id },  // Đảm bảo không lấy chính khóa học này
+        SkillGain: { $in: CurrentCourse.SkillGain }, // Sử dụng `this.SkillGain` để lấy SkillGain của khóa học hiện tại
+        _id: { $ne: CurrentCourse._id }, // Đảm bảo không lấy chính khóa học này
     });
 
     // Kết hợp các khóa học liên quan
@@ -107,7 +107,8 @@ CoursesSchema.statics.GetAllRelevantCourses = async function (CourseId) {
     // Lọc các khóa học trùng lặp
     const uniqueRelevantCourses = allRelevantCourses.filter(
         (value, index, self) =>
-            index === self.findIndex((t) => t._id.toString() === value._id.toString())
+            index ===
+            self.findIndex((t) => t._id.toString() === value._id.toString())
     );
 
     return uniqueRelevantCourses;
@@ -178,14 +179,14 @@ CoursesSchema.statics.GetCoursesByFilter = async function (
 
     const validSortFields = ["Title", "Duration", "Price"];
     let sortOption = {};
-    if(sort){
+    if (sort) {
         if (validSortFields.includes(sort)) {
             sortOption[sort] = order === "desc" ? -1 : 1;
         } else {
             sortOption["Title"] = 1; // Default sort by Title ascending
         }
     }
-    
+
     //pagging
     const startIndex = (page - 1) * ITEMS_PER_PAGE;
 
